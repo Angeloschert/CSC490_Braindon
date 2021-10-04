@@ -26,6 +26,8 @@ The dataset is available on kaggle, https://www.kaggle.com/xxc025/unet-datasets.
 ## Reasons for choosing the dataset
 There are few reasons why BraTS 2017 stands out among all other datasets.  First, we want to investigate the topic of brain tumor detection and segmentation by algorithm, which has been a hot medical science topic today. The trend below illustrates the situation and a description is attached below [1].
 
+![img1](./dataset_report_img1.png)
+
 BraTS 2017 is the dataset that best matches our expectations. Each sample in this dataset is one brain segmentation annotated by experts. The image above shows some of the annotations in the dataset[1].
 
 BraTS 2017 contains 42 GB data in total, with more than 300 samples, which means it has numerous samples for training, testing, and validation purposes. The second reason is that all samples are in the NIfTI analysis format, which is efficient for loading and fetching the necessary metadata for each sample. The last reason is that each label has 4 modalities (T1, T1Gd, T2 and FLAIR), which corresponds with the MRI scans, so the model may have better performance in real life application. 

@@ -43,7 +43,8 @@ def volume_probability_prediction(temp_imgs, data_shape, label_shape, data_chann
                 data_mini_batch.append(np.random.normal(0, 1, size = [data_channel] + data_shape))
         data_mini_batch = np.asarray(data_mini_batch, np.float32)
         data_mini_batch = np.transpose(data_mini_batch, [0, 2, 3, 4, 1])
-        prob_mini_batch = sess.run(proby, feed_dict = {x:data_mini_batch})
+        # prob_mini_batch = sess.run(proby, feed_dict = {x:data_mini_batch})
+        prob_mini_batch =proby(data_mini_batch)
         
         for batch_idx in range(prob_mini_batch.shape[0]):
             center_slice = sub_label_idx*label_shape[0] + int(label_shape[0]/2)
@@ -93,8 +94,8 @@ def volume_probability_prediction_3d_roi(temp_imgs, data_shape, label_shape, dat
                 data_mini_batch.append(np.random.normal(0, 1, size = [data_channel] + data_shape))
         data_mini_batch = np.asanyarray(data_mini_batch, np.float32)
         data_mini_batch = np.transpose(data_mini_batch, [0, 2, 3, 4, 1])
-        outprob_mini_batch = sess.run(proby, feed_dict = {x:data_mini_batch})
-        
+        # outprob_mini_batch = sess.run(proby, feed_dict = {x:data_mini_batch})
+        outprob_mini_batch = proby(data_mini_batch)
         for batch_idx in range(batch_size):
             glb_batch_idx = batch_idx + mini_batch_idx * batch_size
             if(glb_batch_idx >= total_batch):

@@ -118,6 +118,7 @@ def volume_probability_prediction_dynamic_shape(temp_imgs, data_shape, label_sha
     label_slice = label_shape[0]
     full_data_shape = [batch_size, data_slice, Hx, Wx, data_channel]
     # x = tf.placeholder(torch.float32, full_data_shape)
+    x = torch.zeros(full_data_shape, dtype=torch.float32, requires_grad=True)
     predicty = net(x, is_training = True)
     softmax = torch.nn.Softmax(dim=-1)
     proby = softmax(predicty)

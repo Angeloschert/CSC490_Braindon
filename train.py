@@ -16,7 +16,7 @@ from scipy import ndimage
 import time
 import os
 import sys
-import tensorflow as tf
+# import tensorflow as tf
 # from niftynet.layer.loss_segmentation import LossFunction
 from util.data_loader import *
 from util.train_test_func import *
@@ -76,7 +76,7 @@ def train(config_file):
     # 3, initialize session and saver
     lr = config_train.get('learning_rate', 1e-3)
     opt = torch.optim.Adam(w, lr=lr)
-    saver = tf.train.Saver()
+    # saver = tf.train.Saver()
     
     dataloader = DataLoader(config_data)
     dataloader.load_data()

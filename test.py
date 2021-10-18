@@ -14,7 +14,8 @@ from scipy import ndimage
 import time
 import os
 import sys
-import tensorflow as tf
+# import tensorflow as tf
+import torch
 from tensorflow.contrib.data import Iterator
 from util.data_loader import *
 from util.data_process import *
@@ -42,13 +43,16 @@ def test(config_file):
         
         # construct graph for 1st network
         full_data_shape1 = [batch_size] + data_shape1
-        x1 = tf.placeholder(tf.float32, shape = full_data_shape1)          
+        # x1 = tf.placeholder(tf.float32, shape = full_data_shape1) 
+        x1 = torch.zeros(full_data_shape1, dtype=torch.float32, requires_grad=True)         
         net_class1 = NetFactory.create(net_type1)
         net1 = net_class1(num_classes = class_num1,w_regularizer = None,
                     b_regularizer = None, name = net_name1)
         net1.set_params(config_net1)
         predicty1 = net1(x1, is_training = True)
-        proby1 = tf.nn.softmax(predicty1)
+        softmax1 = torch.nn.Softmax(dim=-1)
+        # proby1 = tf.nn.softmax(predicty1)
+        proby1 = softmax1(predicty1)
     else:
         config_net1ax = config['network1ax']
         config_net1sg = config['network1sg']
@@ -62,13 +66,16 @@ def test(config_file):
         class_num1ax   = config_net1ax['class_num']
         
         full_data_shape1ax = [batch_size] + data_shape1ax
-        x1ax = tf.placeholder(tf.float32, shape = full_data_shape1ax)          
+        # x1ax = tf.placeholder(tf.float32, shape = full_data_shape1ax)
+        x1ax = torch.zeros(full_data_shape1ax, dtype=torch.float32, requires_grad=True)
         net_class1ax = NetFactory.create(net_type1ax)
         net1ax = net_class1ax(num_classes = class_num1ax,w_regularizer = None,
                     b_regularizer = None, name = net_name1ax)
         net1ax.set_params(config_net1ax)
         predicty1ax = net1ax(x1ax, is_training = True)
-        proby1ax = tf.nn.softmax(predicty1ax)
+        softmax1ax = torch.nn.Softmax(dim=-1)
+        # proby1ax = tf.nn.softmax(predicty1ax)
+        proby1ax = softmax1ax(predicty1ax)
 
         # construct graph for 1st network sagittal
         net_type1sg    = config_net1sg['net_type']
@@ -78,13 +85,16 @@ def test(config_file):
         class_num1sg   = config_net1sg['class_num']
 
         full_data_shape1sg = [batch_size] + data_shape1sg
-        x1sg = tf.placeholder(tf.float32, shape = full_data_shape1sg)          
+        # x1sg = tf.placeholder(tf.float32, shape = full_data_shape1sg)
+        x1sg = torch.zeros(full_data_shape1sg, dtype=torch.float32, requires_grad=True)
         net_class1sg = NetFactory.create(net_type1sg)
         net1sg = net_class1sg(num_classes = class_num1sg,w_regularizer = None,
                     b_regularizer = None, name = net_name1sg)
         net1sg.set_params(config_net1sg)
         predicty1sg = net1sg(x1sg, is_training = True)
-        proby1sg = tf.nn.softmax(predicty1sg)
+        # proby1sg = tf.nn.softmax(predicty1sg)
+        softmax1sg = torch.nn.Softmax(dim=-1)
+        proby1sg = softmax1sg(predicty1sg)
             
         # construct graph for 1st network corogal
         net_type1cr    = config_net1cr['net_type']
@@ -94,13 +104,16 @@ def test(config_file):
         class_num1cr   = config_net1cr['class_num']
 
         full_data_shape1cr = [batch_size] + data_shape1cr
-        x1cr = tf.placeholder(tf.float32, shape = full_data_shape1cr)          
+        # x1cr = tf.placeholder(tf.float32, shape = full_data_shape1cr)
+        x1cr = torch.zeros(full_data_shape1cr, dtype=torch.float32, requires_grad=True)        
         net_class1cr = NetFactory.create(net_type1cr)
         net1cr = net_class1cr(num_classes = class_num1cr,w_regularizer = None,
                     b_regularizer = None, name = net_name1cr)
         net1cr.set_params(config_net1cr)
         predicty1cr = net1cr(x1cr, is_training = True)
-        proby1cr = tf.nn.softmax(predicty1cr)
+        # proby1cr = tf.nn.softmax(predicty1cr)
+        softmax1cr = torch.nn.Softmax(dim=-1)
+        proby1cr = softmax1cr(predicty1cr)
     
     
     if(config_test.get('whole_tumor_only', False) is False):
@@ -114,13 +127,16 @@ def test(config_file):
             
             # construct graph for 2st network
             full_data_shape2 = [batch_size] + data_shape2
-            x2 = tf.placeholder(tf.float32, shape = full_data_shape2)          
+            # x2 = tf.placeholder(tf.float32, shape = full_data_shape2)
+            x2 = torch.zeros(full_data_shape2, dtype=torch.float32, requires_grad=True)
             net_class2 = NetFactory.create(net_type2)
             net2 = net_class2(num_classes = class_num2,w_regularizer = None,
                         b_regularizer = None, name = net_name2)
             net2.set_params(config_net2)
             predicty2 = net2(x2, is_training = True)
-            proby2 = tf.nn.softmax(predicty2)
+            # proby2 = tf.nn.softmax(predicty2)
+            softmax2 = torch.nn.Softmax(dim=-1)
+            proby2 = softmax2(predicty2)
         else:
             config_net2ax = config['network2ax']
             config_net2sg = config['network2sg']
@@ -134,13 +150,17 @@ def test(config_file):
             class_num2ax   = config_net2ax['class_num']
             
             full_data_shape2ax = [batch_size] + data_shape2ax
-            x2ax = tf.placeholder(tf.float32, shape = full_data_shape2ax)          
+            # x2ax = tf.placeholder(tf.float32, shape = full_data_shape2ax)
+            x2ax = torch.zeros(full_data_shape2ax, dtype=torch.float32, requires_grad=True)
+            
             net_class2ax = NetFactory.create(net_type2ax)
             net2ax = net_class2ax(num_classes = class_num2ax,w_regularizer = None,
                         b_regularizer = None, name = net_name2ax)
             net2ax.set_params(config_net2ax)
             predicty2ax = net2ax(x2ax, is_training = True)
-            proby2ax = tf.nn.softmax(predicty2ax)
+            softmax2ax = torch.nn.Softmax(dim=-1)
+            # proby2ax = tf.nn.softmax(predicty2ax)
+            proby2ax = softmax2ax(predicty2ax)
 
             # construct graph for 2st network sagittal
             net_type2sg    = config_net2sg['net_type']
@@ -150,13 +170,16 @@ def test(config_file):
             class_num2sg   = config_net2sg['class_num']
 
             full_data_shape2sg = [batch_size] + data_shape2sg
-            x2sg = tf.placeholder(tf.float32, shape = full_data_shape2sg)          
+            # x2sg = tf.placeholder(tf.float32, shape = full_data_shape2sg)
+            x2sg = torch.zeros(full_data_shape2sg, dtype=torch.float32, requires_grad=True)
             net_class2sg = NetFactory.create(net_type2sg)
             net2sg = net_class2sg(num_classes = class_num2sg,w_regularizer = None,
                         b_regularizer = None, name = net_name2sg)
             net2sg.set_params(config_net2sg)
             predicty2sg = net2sg(x2sg, is_training = True)
-            proby2sg = tf.nn.softmax(predicty2sg)
+            # proby2sg = tf.nn.softmax(predicty2sg)
+            softmax2sg = torch.nn.Softmax(dim=-1)
+            prob2sg = softmax2sg(predicty2sg)
                 
             # construct graph for 2st network corogal
             net_type2cr    = config_net2cr['net_type']
@@ -166,13 +189,16 @@ def test(config_file):
             class_num2cr   = config_net2cr['class_num']
 
             full_data_shape2cr = [batch_size] + data_shape2cr
-            x2cr = tf.placeholder(tf.float32, shape = full_data_shape2cr)          
+            # x2cr = tf.placeholder(tf.float32, shape = full_data_shape2cr)
+            x2cr = torch.zeros(full_data_shape2cr, dtype=torch.float32, requires_grad=True)
             net_class2cr = NetFactory.create(net_type2cr)
             net2cr = net_class2cr(num_classes = class_num2cr,w_regularizer = None,
                         b_regularizer = None, name = net_name2cr)
             net2cr.set_params(config_net2cr)
             predicty2cr = net2cr(x2cr, is_training = True)
-            proby2cr = tf.nn.softmax(predicty2cr)
+            # proby2cr = tf.nn.softmax(predicty2cr)
+            softmax2cr = torch.nn.Softmax(dim=-1)
+            prob2cr = softmax2cr(predicty2cr)
 
         # 2.3, networks for enhanced tumor
         if(config_net3):
@@ -184,13 +210,16 @@ def test(config_file):
             
             # construct graph for 3st network
             full_data_shape3 = [batch_size] + data_shape3
-            x3 = tf.placeholder(tf.float32, shape = full_data_shape3)          
+            # x3 = tf.placeholder(tf.float32, shape = full_data_shape3)
+            x3 = torch.zeros(full_data_shape3, dtype=torch.float32, requires_grad=True)
             net_class3 = NetFactory.create(net_type3)
             net3 = net_class3(num_classes = class_num3,w_regularizer = None,
                         b_regularizer = None, name = net_name3)
             net3.set_params(config_net3)
             predicty3 = net3(x3, is_training = True)
-            proby3 = tf.nn.softmax(predicty3)
+            # proby3 = tf.nn.softmax(predicty3)
+            softmax3 = torch.nn.Softmax(dim=-1)
+            proby3 = softmax3(predicty3)
         else:
             config_net3ax = config['network3ax']
             config_net3sg = config['network3sg']
@@ -204,13 +233,16 @@ def test(config_file):
             class_num3ax   = config_net3ax['class_num']
             
             full_data_shape3ax = [batch_size] + data_shape3ax
-            x3ax = tf.placeholder(tf.float32, shape = full_data_shape3ax)          
+            # x3ax = tf.placeholder(tf.float32, shape = full_data_shape3ax)
+            x3ax = torch.zeros(full_data_shape3ax, dtype=torch.float32, requires_grad=True)          
             net_class3ax = NetFactory.create(net_type3ax)
             net3ax = net_class3ax(num_classes = class_num3ax,w_regularizer = None,
                         b_regularizer = None, name = net_name3ax)
             net3ax.set_params(config_net3ax)
             predicty3ax = net3ax(x3ax, is_training = True)
-            proby3ax = tf.nn.softmax(predicty3ax)
+            # proby3ax = tf.nn.softmax(predicty3ax)
+            softmax3ax = torch.nn.Softmax(dim=-1)
+            proby3ax = softmax3ax(predicty3ax)
 
             # construct graph for 3st network sagittal
             net_type3sg    = config_net3sg['net_type']
@@ -220,13 +252,16 @@ def test(config_file):
             class_num3sg   = config_net3sg['class_num']
             # construct graph for 3st network
             full_data_shape3sg = [batch_size] + data_shape3sg
-            x3sg = tf.placeholder(tf.float32, shape = full_data_shape3sg)          
+            # x3sg = tf.placeholder(tf.float32, shape = full_data_shape3sg)
+            x3sg = torch.zeros(full_data_shape3sg, dtype=torch.float32, requires_grad=True)
             net_class3sg = NetFactory.create(net_type3sg)
             net3sg = net_class3sg(num_classes = class_num3sg,w_regularizer = None,
                         b_regularizer = None, name = net_name3sg)
             net3sg.set_params(config_net3sg)
             predicty3sg = net3sg(x3sg, is_training = True)
-            proby3sg = tf.nn.softmax(predicty3sg)
+            # proby3sg = tf.nn.softmax(predicty3sg)
+            softmax3sg = torch.nn.Softmax(dim=-1)
+            proby3sg = softmax3sg(predicty3sg)
                 
             # construct graph for 3st network corogal
             net_type3cr    = config_net3cr['net_type']
@@ -236,13 +271,16 @@ def test(config_file):
             class_num3cr   = config_net3cr['class_num']
             # construct graph for 3st network
             full_data_shape3cr = [batch_size] + data_shape3cr
-            x3cr = tf.placeholder(tf.float32, shape = full_data_shape3cr)          
+            # x3cr = tf.placeholder(tf.float32, shape = full_data_shape3cr)
+            x3cr = torch.zeros(full_data_shape3cr, dtype=torch.float32, requires_grad=True)
             net_class3cr = NetFactory.create(net_type3cr)
             net3cr = net_class3cr(num_classes = class_num3cr,w_regularizer = None,
                         b_regularizer = None, name = net_name3cr)
             net3cr.set_params(config_net3cr)
             predicty3cr = net3cr(x3cr, is_training = True)
-            proby3cr = tf.nn.softmax(predicty3cr)
+            softmax3cr = torch.nn.Softmax(dim=-1)
+            # proby3cr = tf.nn.softmax(predicty3cr)
+            proby3cr = softmax3cr(predicty3cr)
 
     # 3, create session and load trained models
     all_vars = tf.global_variables()

@@ -1,13 +1,13 @@
 [data]
-data_root             = /home/guotwang/data/Brats17TrainingData
-data_names            = config17/train_names_all.txt
+data_root             = /home/dd/CSC490_Braindon/brats17/Brats17TrainingData
+data_names            = config17/train_names_temp.txt
 modality_postfix      = [flair, t1, t1ce, t2]
 label_postfix         = seg
 file_postfix          = nii.gz
 with_ground_truth     = True
 batch_size            = 5
-data_shape            = [19, 144, 144, 4]
-label_shape           = [11, 144, 144, 1]
+data_shape            = [4, 144, 144, 19]
+label_shape           = [1, 144, 144, 11]
 label_convert_source  = [0, 1, 2, 4]
 label_convert_target  = [0, 1, 1, 1]
 batch_slice_direction = axial

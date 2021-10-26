@@ -44,11 +44,12 @@ def train(config_file):
     # 2, construct graph
     full_data_shape  = [batch_size] + config_data['data_shape']
     full_label_shape = [batch_size] + config_data['label_shape']
-    x = torch.zeros(full_data_shape, dtype=torch.float32, requires_grad=True).to(device)
-    w = torch.zeros(full_label_shape, dtype=torch.float32, requires_grad=True).to(device)
+    x = torch.zeros(full_data_shape, dtype=torch.float32, requires_grad=True)
+    w = torch.zeros(full_label_shape, dtype=torch.float32, requires_grad=True)
    
     w_regularizer = config_train.get('decay', 1e-7)
     b_regularizer = config_train.get('decay', 1e-7)
+    print(w_regularizer)
 
     net_class = NetFactory.create(net_type)
     net = net_class(
@@ -66,7 +67,7 @@ def train(config_file):
     
     # 3, initialize optimizer
     lr = config_train.get('learning_rate', 1e-3)
-    opt = torch.optim.Adam(w.tolist(), lr=lr)
+    opt = torch.optim.Adam([w], lr=lr)
     
     dataloader = DataLoader(config_data)
     dataloader.load_data()
@@ -80,7 +81,7 @@ def train(config_file):
         net.load_state_dict(checkpoint['model_state_dict'])
         opt.load_state_dict(checkpoint['optimizer_state_dict'])
 
-    loss_list = []
+    loss_list, temp_loss_list = [], []
     for n in range(start_it, config_train['maximal_iteration']):
         train_pair = dataloader.get_subimage_batch()
         tempx = train_pair['images']

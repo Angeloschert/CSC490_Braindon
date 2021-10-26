@@ -105,8 +105,14 @@ class MSNet(nn.Module):
 
         def init_weights(m):
             if isinstance(m, ResBlock) or isinstance(m, Conv2dBlock):
-                torch.nn.init.xavier_normal(m.w_init)
-                torch.nn.init.xavier_normal(m.b_init)
+                try:
+                  torch.nn.init.xavier_normal_(m.w_init)
+                except:
+                  print("No w_init")
+                try:
+                  torch.nn.init.xavier_normal_(m.b_init)
+                except:
+                  print("No b_init")
 
         # First Block
 
@@ -124,6 +130,8 @@ class MSNet(nn.Module):
                 w_init=w_init, w_reg=w_reg
             )
         )
+        # torch.nn.init.xavier_normal_(self.block1[1].weight)
+        # torch.nn.init.xavier_normal_(self.block1[2].weight)
         self.block1.apply(init_weights)
 
         self.fuse1 = Conv2dBlock(

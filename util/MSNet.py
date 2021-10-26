@@ -196,7 +196,7 @@ class MSNet(nn.Module):
         self.fuse2 = Conv2dBlock(
             self.base_chns[1],
             self.base_chns[1],
-            kernels=[1, 1, 3],
+            kernels=[3, 3, 1],
             padding='valid',
             activation=self.activation,
             w_init=self.w_init,

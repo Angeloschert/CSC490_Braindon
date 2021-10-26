@@ -81,11 +81,11 @@ def train(config_file):
         net.load_state_dict(checkpoint['model_state_dict'])
         opt.load_state_dict(checkpoint['optimizer_state_dict'])
 
-    loss_list, temp_loss_list = [], []
+    loss_list = []
     for n in range(start_it, config_train['maximal_iteration']):
         train_pair = dataloader.get_subimage_batch()
-        tempx = train_pair['images']
-        tempy = train_pair['labels']
+        tempx = torch.from_numpy(train_pair['images'])
+        tempy = torch.from_numpy(train_pair['labels'])
 
         opt.zero_grad()
         pred = net(tempx)
@@ -97,9 +97,10 @@ def train(config_file):
             batch_dice_list = []
             for step in range(config_train['test_step']):
                 train_pair = dataloader.get_subimage_batch()
-                tempx = train_pair['images']
+                tempx = torch.from_numpy(train_pair['images'])
+                tempy = torch.from_numpy(train_pair['labels'])
+
                 pred = net(tempx)
-                tempy = train_pair['labels']
                 loss = dice_loss(pred, tempy)
                 batch_dice_list.append(loss)
             batch_dice = np.asarray(batch_dice_list, np.float32).mean()

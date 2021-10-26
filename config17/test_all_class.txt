@@ -9,8 +9,8 @@ file_postfix      = nii.gz
 net_type            = MSNet
 net_name            = MSNet_WT32
 downsample_twice    = True
-data_shape          = [19, 180, 160, 4]
-label_shape         = [11, 180, 160, 1]
+data_shape          = [4, 180, 160, 19]
+label_shape         = [1, 180, 160, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32_20000.ckpt
 
@@ -18,8 +18,8 @@ model_file          = model17/msnet_wt32_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_WT32sg
 downsample_twice    = True
-data_shape          = [19, 160, 180, 4]
-label_shape         = [11, 160, 180, 1]
+data_shape          = [4, 160, 180, 19]
+label_shape         = [1, 160, 180, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32sg_20000.ckpt
 
@@ -37,8 +37,8 @@ model_file          = model17/msnet_wt32cr_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_TC32
 downsample_twice    = True
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_tc32_20000.ckpt
 
@@ -46,8 +46,8 @@ model_file          = model17/msnet_tc32_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_TC32sg
 downsample_twice    = True
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_tc32sg_20000.ckpt
 
@@ -55,8 +55,8 @@ model_file          = model17/msnet_tc32sg_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_TC32cr
 downsample_twice    = True
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_tc32cr_20000.ckpt
 
@@ -64,8 +64,8 @@ model_file          = model17/msnet_tc32cr_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_EN32
 downsample_twice    = False
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_en32_20000.ckpt
 
@@ -73,8 +73,8 @@ model_file          = model17/msnet_en32_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_EN32sg
 downsample_twice    = False
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_en32sg_20000.ckpt
 
@@ -82,8 +82,8 @@ model_file          = model17/msnet_en32sg_20000.ckpt
 net_type            = MSNet
 net_name            = MSNet_EN32cr
 downsample_twice    = False
-data_shape          = [19, 96, 96, 4]
-label_shape         = [11, 96, 96, 1]
+data_shape          = [4, 96, 96, 19]
+label_shape         = [1, 96, 96, 11]
 class_num           = 2
 model_file          = model17/msnet_en32cr_20000.ckpt
 

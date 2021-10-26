@@ -124,7 +124,7 @@ class DataLoader():
                     label = resize_3D_volume_to_given_shape(label, self.data_resize, 0)
                 Y.append(label)
             if((i+1)%50 == 0 or (i+1) == data_num):
-                print('Data load, {0:}% finished'.format((i+1)*100.0/data_num))
+                print('\nData load, {0:}% finished'.format((i+1)*100.0/data_num))
         self.image_names = ImageNames
         self.data   = X
         self.weight = W
@@ -152,8 +152,8 @@ class DataLoader():
         data_shape = self.config['data_shape']
         label_shape = self.config['label_shape']
         down_sample_rate = self.config.get('down_sample_rate', 1.0)
-        data_slice_number = data_shape[0]
-        label_slice_number = label_shape[0]
+        data_slice_number = data_shape[3]
+        label_slice_number = label_shape[3]
         batch_sample_model   = self.config.get('batch_sample_model', ('full', 'valid', 'valid'))
         batch_slice_direction= self.config.get('batch_slice_direction', 'axial') # axial, sagittal, coronal or random
         train_with_roi_patch = self.config.get('train_with_roi_patch', False)
@@ -221,6 +221,7 @@ class DataLoader():
             volume_shape = transposed_volumes[0].shape
             sub_data_shape = [data_slice_number, data_shape[1], data_shape[2]]
             sub_label_shape =[label_slice_number, label_shape[1], label_shape[2]]
+            print("Inside get_one_batch, after trasnpose_volume, transposed_volume shape: " + str(np.array(transposed_volumes).shape))
             center_point = get_random_roi_sampling_center(volume_shape, sub_label_shape, batch_sample_model, boundingbox)
             sub_data = []
             for moda in range(len(transposed_volumes)):
@@ -257,14 +258,14 @@ class DataLoader():
                 label_batch.append([sub_label])
                     
         data_batch = np.asarray(data_batch, np.float32)
-        print("Inside get_one_batch, data_batch shape: " + str(data_batch.shape))
+        print("\nInside get_one_batch, data_batch shape: " + str(data_batch.shape))
         weight_batch = np.asarray(weight_batch, np.float32)
         label_batch = np.asarray(label_batch, np.int64)
         batch = {}
         batch['images']  = np.transpose(data_batch,   [0, 2, 3, 4, 1])
         batch['weights'] = np.transpose(weight_batch, [0, 2, 3, 4, 1])
         batch['labels']  = np.transpose(label_batch,  [0, 2, 3, 4, 1])
-        print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape))
+        print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape + "\n"))
         
         return batch
     

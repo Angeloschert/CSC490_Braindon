@@ -61,7 +61,7 @@ def train(config_file):
 
     predicty = net(x)
     # proby = torch.softmax(predicty)
-    print('Size of x:', x.shape)
+    print('\nSize of x:', x.shape)
     print('Size of predicty:', predicty.shape)
     # print('Size of proby:', proby.shape)
     
@@ -86,6 +86,10 @@ def train(config_file):
         train_pair = dataloader.get_subimage_batch()
         tempx = torch.from_numpy(train_pair['images'])
         tempy = torch.from_numpy(train_pair['labels'])
+
+        print("\nInside train.py - testing iter, tempx shape: " + str(tempx.shape))
+        print("Inside train.py - testing iter, tempy shape: " + str(tempy.shape))
+        print("Inside train.py - testing iter, pred shape: " + str(pred.shape))
 
         opt.zero_grad()
         pred = net(tempx)

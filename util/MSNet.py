@@ -1,440 +1,447 @@
-# -*- coding: utf-8 -*-
-# Implementation of Wang et al 2017: Automatic Brain Tumor Segmentation using Cascaded Anisotropic Convolutional Neural Networks. https://arxiv.org/abs/1709.00382
-
-# Author: Guotai Wang
-# Copyright (c) 2017-2018 University College London, United Kingdom. All rights reserved.
-# http://cmictig.cs.ucl.ac.uk
-#
-# Distributed under the BSD-3 licence. Please see the file licence.txt
-# This software is not certified for clinical use.
-#
 from __future__ import absolute_import, print_function
-import tensorflow as tf
-from niftynet.layer.base_layer import TrainableLayer
-from niftynet.layer import layer_util
-from niftynet.layer.activation import ActiLayer
-from niftynet.layer.bn import BNLayer
-from niftynet.layer.convolution import ConvLayer, ConvolutionalLayer
-from niftynet.layer.deconvolution import DeconvolutionalLayer
-from niftynet.layer.elementwise import ElementwiseLayer
+from util.data_loader import *
+from util.train_test_func import *
+from util.parse_config import parse_config
+import torch
+import torch.nn as nn
 
-class MSNet(TrainableLayer):
-    """
-    Inplementation of WNet, TNet and ENet presented in:
-        Wang, Guotai, Wenqi Li, Sebastien Ourselin, and Tom Vercauteren. "Automatic brain tumor segmentation using cascaded anisotropic convolutional neural networks." arXiv preprint arXiv:1709.00382 (2017).
-    These three variants are implemented in a single class named as "MSNet".
-    """
-    def __init__(self,
-                 num_classes,
-                 w_initializer=None,
-                 w_regularizer=None,
-                 b_initializer=None,
-                 b_regularizer=None,
-                 acti_func='prelu',
-                 name='MSNet'):
-
-        super(MSNet, self).__init__(name=name)
-        self.num_classes = num_classes
-        self.initializers = {'w': w_initializer, 'b': b_initializer}
-        self.regularizers = {'w': w_regularizer, 'b': b_regularizer}
-        self.acti_func = acti_func
-        self.base_chns = [32, 32, 32, 32]
-        self.downsample_twice = True
-        
-    def set_params(self, params):
-        self.base_chns = params.get('base_feature_number', [32, 32, 32, 32])
-        self.acti_func = params.get('acti_func', 'prelu')
-        self.downsample_twice = params['downsample_twice']
-        
-    def layer_op(self, images, is_training):
-        block1_1 = ResBlock(self.base_chns[0],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block1_1')
-
-        block1_2 = ResBlock(self.base_chns[0],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block1_2')
-        
-        
-        block2_1 = ResBlock(self.base_chns[1],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block2_1')
-        
-        block2_2 = ResBlock(self.base_chns[1],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block2_2')
-        
-        block3_1 =  ResBlock(self.base_chns[2],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 1, 1], [1, 1, 1]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block3_1')
-        
-        block3_2 =  ResBlock(self.base_chns[2],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 2, 2], [1, 2, 2]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block3_2')
-        
-        block3_3 =  ResBlock(self.base_chns[2],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block3_3')
-
-        block4_1 =  ResBlock(self.base_chns[3],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 3, 3], [1, 3, 3]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block4_1')
-        
-        block4_2 =  ResBlock(self.base_chns[3],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 2, 2], [1, 2, 2]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block4_2')
-        
-        block4_3 =  ResBlock(self.base_chns[3],
-                  kernels = [[1, 3, 3], [1, 3, 3]],
-                  dilation_rates = [[1, 1, 1], [1, 1, 1]],
-                  acti_func=self.acti_func,
-                  w_initializer=self.initializers['w'],
-                  w_regularizer=self.regularizers['w'],
-                  name = 'block4_3')
-        
-        fuse1 = ConvolutionalLayer(self.base_chns[0],
-                    kernel_size= [3, 1, 1],
-                    padding='VALID',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='fuse1')
-        
-        downsample1 = ConvolutionalLayer(self.base_chns[0],
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='downsample1')
-        
-        fuse2 = ConvolutionalLayer(self.base_chns[1],
-                    kernel_size= [3, 1, 1],
-                    padding='VALID',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='fuse2')        
-        
-        downsample2 = ConvolutionalLayer(self.base_chns[1],
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='downsample2')
-        
-        fuse3 = ConvolutionalLayer(self.base_chns[2],
-                    kernel_size= [3, 1, 1],
-                    padding='VALID',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='fuse3')
-        
-        fuse4 = ConvolutionalLayer(self.base_chns[3],
-                    kernel_size= [3, 1, 1],
-                    padding='VALID',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='fuse4')    
-                
-        feature_expand1 =  ConvolutionalLayer(self.base_chns[1],
-                    kernel_size= [1, 1, 1],
-                    stride = [1, 1, 1],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='feature_expand1')
-        
-        feature_expand2 =  ConvolutionalLayer(self.base_chns[2],
-                    kernel_size= [1, 1, 1],
-                    stride = [1, 1, 1],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='feature_expand2')
-
-        feature_expand3 =  ConvolutionalLayer(self.base_chns[3],
-                    kernel_size= [1, 1, 1],
-                    stride = [1, 1, 1],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='feature_expand3')
-                        
-        centra_slice1 = TensorSliceLayer(margin = 2)
-        centra_slice2 = TensorSliceLayer(margin = 1)
-        pred1 = ConvLayer(self.num_classes,
-                    kernel_size=[1, 3, 3],
-                    padding = 'SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    name='pred1')
-
-        pred_up1  = DeconvolutionalLayer(self.num_classes,
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='pred_up1')
-        pred_up2_1  = DeconvolutionalLayer(self.num_classes*2,
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='pred_up2_1')
-        pred_up2_2  = DeconvolutionalLayer(self.num_classes*2,
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='pred_up2_2')
-        pred_up3_1  = DeconvolutionalLayer(self.num_classes*4,
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='pred_up3_1')
-        pred_up3_2  = DeconvolutionalLayer(self.num_classes*4,
-                    kernel_size= [1, 3, 3],
-                    stride = [1, 2, 2],
-                    padding='SAME',
-                    w_initializer=self.initializers['w'],
-                    w_regularizer=self.regularizers['w'],
-                    b_initializer=self.initializers['b'],
-                    b_regularizer=self.regularizers['b'],
-                    acti_func=self.acti_func,
-                    with_bn = True,
-                    name='pred_up3_2')
-        
-        final_pred =  ConvLayer(self.num_classes,
-                kernel_size=[1, 3, 3],
-                padding = 'SAME',
-                w_initializer=self.initializers['w'],
-                w_regularizer=self.regularizers['w'],
-                b_initializer=self.initializers['b'],
-                b_regularizer=self.regularizers['b'],
-                name='final_pred') 
- 
-        f1 = images
-        f1 = block1_1(f1, is_training)
-        f1 = block1_2(f1, is_training)
-        f1 = fuse1(f1, is_training)
-        if(self.downsample_twice):
-            f1 = downsample1(f1, is_training)
-        if(self.base_chns[0] != self.base_chns[1]):
-            f1 = feature_expand1(f1, is_training)
-        f1 = block2_1(f1, is_training)
-        f1 = block2_2(f1, is_training)
-        f1 = fuse2(f1, is_training)
-        
-        f2 = downsample2(f1, is_training)
-        if(self.base_chns[1] != self.base_chns[2]):
-            f2 = feature_expand2(f2, is_training)
-        f2 = block3_1(f2, is_training)
-        f2 = block3_2(f2, is_training)
-        f2 = block3_3(f2, is_training)
-        f2 = fuse3(f2, is_training)
-        
-        f3 = f2
-        if(self.base_chns[2] != self.base_chns[3]):
-            f3 = feature_expand3(f3, is_training) 
-        f3 = block4_1(f3, is_training)
-        f3 = block4_2(f3, is_training)
-        f3 = block4_3(f3, is_training)
-        f3 = fuse4(f3, is_training)
-        
-        p1 = centra_slice1(f1)
-        if(self.downsample_twice):
-            p1 = pred_up1(p1, is_training)
+class ResBlock(nn.Module):
+    def __init__(self, in_chns, out_chns, kernels=[[3, 3, 1], [3, 3, 1]], strides=[[1,1,1], [1,1,1]], dilation_rate=[[1,1,1], [1,1,1]], activation=None, w_init=None, w_reg=None, res=True):
+        super().__init__()
+        self.in_chns = in_chns
+        self.out_chns = out_chns
+        self.kernels = kernels
+        self.strides = strides
+        self.dilation_rate = dilation_rate
+        if not activation:
+            self.activation = nn.PReLU()
         else:
-            p1 = pred1(p1)
-         
-        p2 = centra_slice2(f2)
-        p2 = pred_up2_1(p2, is_training)
-        if(self.downsample_twice):
-            p2 = pred_up2_2(p2, is_training)
+            self.activation = activation
+        self.w_init = w_init
+        self.w_reg = w_reg
+        self.res = res
         
-        p3 = pred_up3_1(f3, is_training)
-        if(self.downsample_twice):
-            p3 = pred_up3_2(p3, is_training)
-
-        cat = tf.concat([p1, p2, p3], axis = 4, name = 'concate')
-        pred = final_pred(cat)
-        return pred
-
-class ResBlock(TrainableLayer):
-    """
-    This class define a high-resolution block with residual connections
-    kernels - specify kernel sizes of each convolutional layer
-            - e.g.: kernels=(5, 5, 5) indicate three conv layers of kernel_size 5
-    with_res - whether to add residual connections to bypass the conv layers
-    """
-    def __init__(self,
-                 n_output_chns,
-                 kernels=[[1, 3, 3], [1, 3, 3]],
-                 strides=[[1, 1, 1], [1, 1, 1]],
-                 dilation_rates = [[1, 1, 1], [1, 1, 1]],
-                 acti_func='prelu',
-                 w_initializer=None,
-                 w_regularizer=None,
-                 with_res=True,
-                 name='ResBlock'):
-        super(ResBlock, self).__init__(name=name)
-        self.n_output_chns = n_output_chns
-        if hasattr(kernels, "__iter__"):  # a list of layer kernel_sizes
-            assert(len(kernels) == len(strides))
-            assert(len(kernels) == len(dilation_rates))
-            self.kernels = kernels
-            self.strides = strides
-            self.dilation_rates = dilation_rates
-        else:  # is a single number (indicating single layer)
-            self.kernels = [kernels]
-            self.strides = [strides]
-            self.dilation_rates = [dilation_rates]
-        self.acti_func = acti_func
-        self.with_res = with_res
-        
-        self.initializers = {'w': w_initializer}
-        self.regularizers = {'w': w_regularizer}
-        
-    def layer_op(self, input_tensor, is_training):
-        output_tensor = input_tensor
-        for i in range(len(self.kernels)):
-            # create parameterised layers
-            bn_op = BNLayer(regularizer=self.regularizers['w'],
-                            name='bn_{}'.format(i))
-            acti_op = ActiLayer(func=self.acti_func,
-                                regularizer=self.regularizers['w'],
-                                name='acti_{}'.format(i))
-            conv_op = ConvLayer(n_output_chns=self.n_output_chns,
-                                kernel_size=self.kernels[i],
-                                stride=self.strides[i],
-                                dilation=self.dilation_rates[i],
-                                w_initializer=self.initializers['w'],
-                                w_regularizer=self.regularizers['w'],
-                                name='conv_{}'.format(i))
-            # connect layers
-            output_tensor = bn_op(output_tensor, is_training)
-            output_tensor = acti_op(output_tensor)
-            output_tensor = conv_op(output_tensor)
-        # make residual connections
-        if self.with_res:
-            output_tensor = ElementwiseLayer('SUM')(output_tensor, input_tensor)
-        return output_tensor
     
-
-class TensorSliceLayer(TrainableLayer):
-    """
-    extract the central part of a tensor
-    """
-
-    def __init__(self, margin = 1, regularizer=None, name='tensor_extract'):
-        self.layer_name = name
-        super(TensorSliceLayer, self).__init__(name=self.layer_name)
+    def forward(self, x):
+        output = x
+        #print(len(self.kernels))
+        in_chns = self.in_chns
+        for i in range(len(self.kernels)):
+            kernel, stride, dilation = self.kernels[i], self.strides[i], self.dilation_rate[i]
+            #print(self.in_chns, self.out_chns, kernel, stride, dilation)
+            #print(output.shape)
+            self.conv3d = nn.Conv3d(in_chns, self.out_chns, kernel_size=kernel, padding='same', dilation=dilation)
+            self.batchnorm = nn.BatchNorm3d(in_chns)
+            in_chns = self.out_chns
+            output = self.batchnorm(output)
+            output = self.activation(output)
+            output = self.conv3d(output)
+        if self.res:
+            if self.in_chns != self.out_chns:
+                self.projector = nn.Conv3d(self.in_chns, self.out_chns, kernel_size=1, stride=1, padding='same')
+                x = self.projector(x)
+            output += x
+        #print("Finish block")
+        return output
+               
+class Conv2dBlock(nn.Module):
+    def __init__(self,in_chns, out_chns, kernels, padding=0, strides=[1, 1, 1], activation=nn.PReLU(), w_init=None, w_reg=None, b_init=None, b_reg=None, with_bn=True, deconv=False):
+        super().__init__()
+        self.in_chns = in_chns
+        self.out_chns = out_chns
+        self.kernels = kernels
+        self.strides = strides
+        self.padding = padding
+        self.activation = activation
+        self.w_init = w_init
+        self.w_reg = w_reg
+        self.b_init = b_init
+        self.b_reg = b_reg
+        if not deconv:
+            self.conv_block = nn.Conv3d(in_chns, out_chns, kernel_size=kernels, padding=padding, stride=strides, bias=True)
+        else:
+            self.conv_block = nn.ConvTranspose3d(in_chns, out_chns, kernel_size=kernels, padding=padding, stride=strides, bias=True)
+            
+        if with_bn:
+            self.bn = nn.BatchNorm3d(self.out_chns)
+        else:
+            self.bn = nn.Identity()
+    
+    def forward(self, x):
+        output = self.conv_block(x)
+        output = self.bn(output)
+        output = self.activation(output)
+        return output
+    
+class SliceLayer(nn.Module):
+    
+    def __init__(self, margin=1):
+        super().__init__()
         self.margin = margin
         
-    def layer_op(self, input_tensor):
-        input_shape = input_tensor.get_shape().as_list()
-        begin = [0]*len(input_shape)
-        begin[1] = self.margin
-        size = input_shape
-        size[1] = size[1] - 2* self.margin
-        output_tensor = tf.slice(input_tensor, begin, size, name='slice')
-        return output_tensor
+    def forward(self, x):
+        # TODO: Fix this
+        return x[:, :, :, :, self.margin:-(self.margin)]
     
-if __name__ == '__main__':
-    x = tf.placeholder(tf.float32, shape = [1, 96, 96, 96, 1])
-    y = tf.placeholder(tf.float32, shape = [1, 96, 96, 96, 2])
-    net = MSNet(num_classes=2)
-    predicty = net(x, is_training = True)
-    print(x)
-    print(predicty)
+class MSNet(nn.Module):
+
+    def __init__(
+        self,
+        in_chns,
+        num_classes,
+        w_init=None,
+        w_reg=None,
+        b_init=None,
+        b_reg=None,
+        activation=nn.PReLU(),
+    ):
+
+        # TODO: Add weight init
+
+        super().__init__()
+        self.num_classes = num_classes
+        (self.w_init, self.w_reg, self.b_init, self.b_reg) = (w_init,
+                w_reg, b_init, b_reg)
+        self.activation = activation
+        self.base_chns = [32, 32, 32, 32]
+        self.is_WTNet = True
+
+        # First Block
+
+        self.block1 = nn.Sequential(
+            ResBlock(
+                in_chns,
+                self.base_chns[0],
+                activation=activation,
+                w_init=w_init, w_reg=w_reg
+            ),
+            ResBlock(
+                self.base_chns[0],
+                self.base_chns[0],
+                activation=activation,
+                w_init=w_init, w_reg=w_reg
+            )
+        )
+
+        self.fuse1 = Conv2dBlock(
+            self.base_chns[0],
+            self.base_chns[0],
+            kernels=[1, 1, 3],
+            padding='valid',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.downsample1 = Conv2dBlock(
+            self.base_chns[0],
+            self.base_chns[0],
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.feature_expand1 = Conv2dBlock(
+            self.base_chns[0],
+            self.base_chns[1],
+            kernels=[1, 1, 1],
+            strides=[1, 1, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        # Second Block
+
+        self.block2 = nn.Sequential(
+            ResBlock(
+                self.base_chns[1],
+                self.base_chns[1],
+                activation=activation,
+                w_init=w_init, w_reg=w_reg
+            ),
+            ResBlock(
+                self.base_chns[1],
+                self.base_chns[1],
+                activation=activation,
+                w_init=w_init, w_reg=w_reg
+            )
+        )
+
+        self.fuse2 = Conv2dBlock(
+            self.base_chns[1],
+            self.base_chns[1],
+            kernels=[1, 1, 3],
+            padding='valid',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.downsample2 = Conv2dBlock(
+            self.base_chns[1],
+            self.base_chns[1],
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.feature_expand2 = Conv2dBlock(
+            self.base_chns[1],
+            self.base_chns[2],
+            kernels=[1, 1, 1],
+            strides=[1, 1, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.pred_1E = nn.Conv3d(
+            self.base_chns[1], 
+            self.num_classes,               
+            kernel_size=[3, 3, 1], 
+            padding='same'
+        )
+
+        self.pred_1WT = Conv2dBlock(
+            self.base_chns[1],
+            self.num_classes,
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+            deconv=True,
+        )
+
+        # Third Block
+
+        self.block3 = nn.Sequential(
+            ResBlock(
+                self.base_chns[2],
+                self.base_chns[2],
+                dilation_rate=[[1, 1, 1], [1, 1, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            ), 
+            ResBlock(
+                self.base_chns[2],
+                self.base_chns[2],
+                strides=[[2, 2, 1], [2, 2, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            ), 
+            ResBlock(
+                self.base_chns[2],
+                self.base_chns[2],
+                dilation_rate=[[3, 3, 1], [3, 3, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            )
+        )
+        self.fuse3 = Conv2dBlock(
+            self.base_chns[2],
+            self.base_chns[2],
+            kernels=[1, 1, 3],
+            padding='valid',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.feature_expand3 = Conv2dBlock(
+            self.base_chns[2],
+            self.base_chns[3],
+            kernels=[1, 1, 1],
+            strides=[1, 1, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.pred_21 = Conv2dBlock(
+            self.base_chns[2],
+            self.num_classes * 2,
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+            deconv=True,
+        )
+
+        self.pred_22 = Conv2dBlock(
+            self.num_classes * 2,
+            self.num_classes * 2,
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+            deconv=True,
+        )
+
+        # Fourth Block
+
+        self.block4 = nn.Sequential(
+            ResBlock(
+                self.base_chns[3],
+                self.base_chns[3],
+                dilation_rate=[[3, 3, 1], [3, 3, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            ), 
+            ResBlock(
+                self.base_chns[3],
+                self.base_chns[3],
+                dilation_rate=[[2, 2, 1], [2, 2, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            ), 
+            ResBlock(
+                self.base_chns[3],
+                self.base_chns[3],
+                dilation_rate=[[1, 1, 1], [1, 1, 1]],
+                activation=activation,
+                w_init=w_init,
+                w_reg=w_reg,
+            )
+        )
+
+        self.fuse4 = Conv2dBlock(
+            self.base_chns[3],
+            self.base_chns[3],
+            kernels=[1, 1, 3],
+            padding='valid',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+        )
+
+        self.pred_31 = Conv2dBlock(
+            self.base_chns[3],
+            self.num_classes * 4,
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+            # padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+            deconv=True,
+        )
+
+        self.pred_32 = Conv2dBlock(
+            self.num_classes * 4,
+            self.num_classes * 4,
+            kernels=[3, 3, 1],
+            strides=[2, 2, 1],
+           #  padding='same',
+            activation=self.activation,
+            w_init=self.w_init,
+            w_reg=self.w_reg,
+            b_init=self.b_init,
+            b_reg=self.b_reg,
+            deconv=True,
+        )
+
+        # TODO: Change this MAYBE
+
+        self.final_pred = nn.Conv3d(14, self.num_classes, kernel_size=[3, 3, 1], padding='same')
+        self.centra_slice1 = SliceLayer(margin=2)
+        self.centra_slice2 = SliceLayer(margin=1)
+
+    def forward(self, x):
+        f1 = x
+        # print("f1", f1.shape)
+        f1 = self.block1(f1)
+        # print("f1", f1.shape)
+        f1 = self.fuse1(f1)
+        # print("f1", f1.shape)
+        if self.is_WTNet:
+            f1 = self.downsample1(f1)
+        if self.base_chns[0] != self.base_chns[1]:
+            f1 = self.feature_expand1(f1)
+        # print("f1", f1.shape)
+        f1 = self.block2(f1)
+        # print("f1", f1.shape)
+        f1 = self.fuse2(f1)
+        # print("f1", f1.shape)
+        f2 = self.downsample2(f1)
+        if self.base_chns[1] != self.base_chns[2]:
+            f2 = self.feature_expand1(f2)
+        f2 = self.block3(f2)
+        f2 = self.fuse3(f2)
+        # print("f2", f2.shape)
+        f3 = f2
+        if self.base_chns[2] != self.base_chns[3]:
+            f3 = self.feature_expand1(f3)
+        f3 = self.block4(f3)
+        f3 = self.fuse3(f3)
+        # print("f3", f3.shape)
+        # Prediction
+
+        p1 = self.centra_slice1(f1)
+        # print(f1.shape, p1.shape)
+        # print(p1.shape)
+        if self.is_WTNet:
+            p1 = self.pred_1WT(p1)
+        else:
+            p1 = self.pred_1E(p1)
+
+        p2 = self.centra_slice2(f2)
+        # print(f2.shape, p2.shape)
+        p2 = self.pred_21(p2)
+        if self.is_WTNet:
+            p2 = self.pred_22(p2)
+
+        p3 = self.pred_31(f3)
+        if self.is_WTNet:
+            p3 = self.pred_32(p3)
+
+        # print(p1.shape, p2.shape, p3.shape)
+        combine = torch.cat([p1, p2, p3], 1)
+        # print(combine.shape)
+        return self.final_pred(combine)

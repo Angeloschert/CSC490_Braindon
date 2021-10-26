@@ -96,15 +96,17 @@ class MSNet(nn.Module):
         activation=nn.PReLU(),
     ):
 
-        # TODO: Add weight init
-
         super().__init__()
         self.num_classes = num_classes
-        (self.w_init, self.w_reg, self.b_init, self.b_reg) = (w_init,
-                w_reg, b_init, b_reg)
+        self.w_init, self.w_reg, self.b_init, self.b_reg = w_init, w_reg, b_init, b_reg
         self.activation = activation
         self.base_chns = [32, 32, 32, 32]
         self.is_WTNet = True
+
+        def init_weights(m):
+            if isinstance(m, ResBlock) or isinstance(m, Conv2dBlock):
+                torch.nn.init.xavier_normal(m.w_init)
+                torch.nn.init.xavier_normal(m.b_init)
 
         # First Block
 
@@ -122,6 +124,7 @@ class MSNet(nn.Module):
                 w_init=w_init, w_reg=w_reg
             )
         )
+        self.block1.apply(init_weights)
 
         self.fuse1 = Conv2dBlock(
             self.base_chns[0],
@@ -134,6 +137,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.fuse1.apply(init_weights)
 
         self.downsample1 = Conv2dBlock(
             self.base_chns[0],
@@ -147,6 +151,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.downsample1.apply(init_weights)
 
         self.feature_expand1 = Conv2dBlock(
             self.base_chns[0],
@@ -160,6 +165,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.feature_expand1.apply(init_weights)
 
         # Second Block
 
@@ -177,6 +183,7 @@ class MSNet(nn.Module):
                 w_init=w_init, w_reg=w_reg
             )
         )
+        self.block2.apply(init_weights)
 
         self.fuse2 = Conv2dBlock(
             self.base_chns[1],
@@ -189,6 +196,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.fuse2.apply(init_weights)
 
         self.downsample2 = Conv2dBlock(
             self.base_chns[1],
@@ -202,6 +210,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.downsample2.apply(init_weights)
 
         self.feature_expand2 = Conv2dBlock(
             self.base_chns[1],
@@ -215,6 +224,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.feature_expand2.apply(init_weights)
 
         self.pred_1E = nn.Conv3d(
             self.base_chns[1], 
@@ -236,6 +246,7 @@ class MSNet(nn.Module):
             b_reg=self.b_reg,
             deconv=True,
         )
+        self.pred_1WT.apply(init_weights)
 
         # Third Block
 
@@ -265,6 +276,8 @@ class MSNet(nn.Module):
                 w_reg=w_reg,
             )
         )
+        self.block3.apply(init_weights)
+
         self.fuse3 = Conv2dBlock(
             self.base_chns[2],
             self.base_chns[2],
@@ -276,6 +289,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.fuse3.apply(init_weights)
 
         self.feature_expand3 = Conv2dBlock(
             self.base_chns[2],
@@ -289,6 +303,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.feature_expand3.apply(init_weights)
 
         self.pred_21 = Conv2dBlock(
             self.base_chns[2],
@@ -303,6 +318,7 @@ class MSNet(nn.Module):
             b_reg=self.b_reg,
             deconv=True,
         )
+        self.pred_21.apply(init_weights)
 
         self.pred_22 = Conv2dBlock(
             self.num_classes * 2,
@@ -317,6 +333,7 @@ class MSNet(nn.Module):
             b_reg=self.b_reg,
             deconv=True,
         )
+        self.pred_22.apply(init_weights)
 
         # Fourth Block
 
@@ -346,6 +363,7 @@ class MSNet(nn.Module):
                 w_reg=w_reg,
             )
         )
+        self.block4.apply(init_weights)
 
         self.fuse4 = Conv2dBlock(
             self.base_chns[3],
@@ -358,6 +376,7 @@ class MSNet(nn.Module):
             b_init=self.b_init,
             b_reg=self.b_reg,
         )
+        self.fuse4.apply(init_weights)
 
         self.pred_31 = Conv2dBlock(
             self.base_chns[3],
@@ -372,6 +391,7 @@ class MSNet(nn.Module):
             b_reg=self.b_reg,
             deconv=True,
         )
+        self.pred_31.apply(init_weights)
 
         self.pred_32 = Conv2dBlock(
             self.num_classes * 4,
@@ -386,12 +406,14 @@ class MSNet(nn.Module):
             b_reg=self.b_reg,
             deconv=True,
         )
+        self.pred_32.apply(init_weights)
 
         # TODO: Change this MAYBE
 
         self.final_pred = nn.Conv3d(14, self.num_classes, kernel_size=[3, 3, 1], padding='same')
         self.centra_slice1 = SliceLayer(margin=2)
         self.centra_slice2 = SliceLayer(margin=1)
+
 
     def forward(self, x):
         f1 = x
@@ -405,6 +427,7 @@ class MSNet(nn.Module):
         if self.base_chns[0] != self.base_chns[1]:
             f1 = self.feature_expand1(f1)
         # print("f1", f1.shape)
+
         f1 = self.block2(f1)
         # print("f1", f1.shape)
         f1 = self.fuse2(f1)
@@ -415,6 +438,7 @@ class MSNet(nn.Module):
         f2 = self.block3(f2)
         f2 = self.fuse3(f2)
         # print("f2", f2.shape)
+        
         f3 = f2
         if self.base_chns[2] != self.base_chns[3]:
             f3 = self.feature_expand1(f3)

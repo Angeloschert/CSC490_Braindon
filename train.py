@@ -15,6 +15,7 @@ from torchgeometry.losses.dice import *
 import torch
 import torch.nn as nn
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class NetFactory(object):
     @staticmethod
@@ -43,8 +44,8 @@ def train(config_file):
     # 2, construct graph
     full_data_shape  = [batch_size] + config_data['data_shape']
     full_label_shape = [batch_size] + config_data['label_shape']
-    x = torch.zeros(full_data_shape, dtype=torch.float32, requires_grad=True)
-    w = torch.zeros(full_label_shape, dtype=torch.float32, requires_grad=True)
+    x = torch.zeros(full_data_shape, dtype=torch.float32, requires_grad=True).to(device)
+    w = torch.zeros(full_label_shape, dtype=torch.float32, requires_grad=True).to(device)
    
     w_regularizer = config_train.get('decay', 1e-7)
     b_regularizer = config_train.get('decay', 1e-7)
@@ -54,19 +55,18 @@ def train(config_file):
         in_chns = full_data_shape[1], # not sure
         num_classes = class_num,
         w_reg = w_regularizer,
-        b_reg = b_regularizer,
-        name = net_name
+        b_reg = b_regularizer
     )
 
     predicty = net(x)
-    proby = torch.softmax(predicty)
+    # proby = torch.softmax(predicty)
     print('Size of x:', x.shape)
     print('Size of predicty:', predicty.shape)
-    print('Size of proby:', proby.shape)
+    # print('Size of proby:', proby.shape)
     
     # 3, initialize optimizer
     lr = config_train.get('learning_rate', 1e-3)
-    opt = torch.optim.Adam(w, lr=lr)
+    opt = torch.optim.Adam(w.tolist(), lr=lr)
     
     dataloader = DataLoader(config_data)
     dataloader.load_data()
@@ -80,7 +80,7 @@ def train(config_file):
         net.load_state_dict(checkpoint['model_state_dict'])
         opt.load_state_dict(checkpoint['optimizer_state_dict'])
 
-    loss_list, temp_loss_list = [], []
+    loss_list = []
     for n in range(start_it, config_train['maximal_iteration']):
         train_pair = dataloader.get_subimage_batch()
         tempx = train_pair['images']

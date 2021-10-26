@@ -178,9 +178,9 @@ class DataLoader():
                 flip = False
             self.patient_id = random.randint(0, len(self.data)-1)
             data_volumes = [x for x in self.data[self.patient_id]]
-            print("Inside get_one_batch, data_volume shape: " + data_volumes.shape)
+            print("Inside get_one_batch, data_volume shape: " + np.array(data_volumes).shape)
             weight_volumes = [self.weight[self.patient_id]]
-            print("Inside get_one_batch, weight_volume shape: " + weight_volumes.shape)
+            print("Inside get_one_batch, weight_volume shape: " + np.array(weight_volumes).shape)
             boundingbox = None
             if(self.with_ground_truth):
                 label_volumes = [self.label[self.patient_id]]

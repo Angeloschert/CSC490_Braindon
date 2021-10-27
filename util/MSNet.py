@@ -45,7 +45,7 @@ class ResBlock(nn.Module):
         return output
                
 class Conv2dBlock(nn.Module):
-    def __init__(self,in_chns, out_chns, kernels, padding=0, strides=[1, 1, 1], activation=nn.PReLU(), w_init=None, w_reg=None, b_init=None, b_reg=None, with_bn=True, deconv=False):
+    def __init__(self,in_chns, out_chns, kernels, padding=1, strides=[1, 1, 1], activation=nn.PReLU(), w_init=None, w_reg=None, b_init=None, b_reg=None, with_bn=True, deconv=False):
         super().__init__()
         self.in_chns = in_chns
         self.out_chns = out_chns
@@ -130,8 +130,6 @@ class MSNet(nn.Module):
                 w_init=w_init, w_reg=w_reg
             )
         )
-        # torch.nn.init.xavier_normal_(self.block1[1].weight)
-        # torch.nn.init.xavier_normal_(self.block1[2].weight)
         self.block1.apply(init_weights)
 
         self.fuse1 = Conv2dBlock(
@@ -197,7 +195,7 @@ class MSNet(nn.Module):
             self.base_chns[1],
             self.base_chns[1],
             kernels=[3, 3, 1],
-            padding='valid',
+            # padding='valid',
             activation=self.activation,
             w_init=self.w_init,
             w_reg=self.w_reg,
@@ -244,7 +242,7 @@ class MSNet(nn.Module):
         self.pred_1WT = Conv2dBlock(
             self.base_chns[1],
             self.num_classes,
-            kernels=[3, 3, 1],
+            kernels=[4, 4, 1],
             strides=[2, 2, 1],
             # padding='same',
             activation=self.activation,
@@ -316,7 +314,7 @@ class MSNet(nn.Module):
         self.pred_21 = Conv2dBlock(
             self.base_chns[2],
             self.num_classes * 2,
-            kernels=[3, 3, 1],
+            kernels=[4, 4, 1],
             strides=[2, 2, 1],
             # padding='same',
             activation=self.activation,
@@ -331,7 +329,7 @@ class MSNet(nn.Module):
         self.pred_22 = Conv2dBlock(
             self.num_classes * 2,
             self.num_classes * 2,
-            kernels=[3, 3, 1],
+            kernels=[4, 4, 1],
             strides=[2, 2, 1],
             # padding='same',
             activation=self.activation,
@@ -389,7 +387,7 @@ class MSNet(nn.Module):
         self.pred_31 = Conv2dBlock(
             self.base_chns[3],
             self.num_classes * 4,
-            kernels=[3, 3, 1],
+            kernels=[4, 4, 1],
             strides=[2, 2, 1],
             # padding='same',
             activation=self.activation,
@@ -404,7 +402,7 @@ class MSNet(nn.Module):
         self.pred_32 = Conv2dBlock(
             self.num_classes * 4,
             self.num_classes * 4,
-            kernels=[3, 3, 1],
+            kernels=[4, 4, 1],
             strides=[2, 2, 1],
            #  padding='same',
             activation=self.activation,
@@ -415,8 +413,6 @@ class MSNet(nn.Module):
             deconv=True,
         )
         self.pred_32.apply(init_weights)
-
-        # TODO: Change this MAYBE
 
         self.final_pred = nn.Conv3d(14, self.num_classes, kernel_size=[3, 3, 1], padding='same')
         self.centra_slice1 = SliceLayer(margin=2)

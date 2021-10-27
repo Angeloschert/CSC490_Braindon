@@ -81,19 +81,38 @@ def train(config_file):
         net.load_state_dict(checkpoint['model_state_dict'])
         opt.load_state_dict(checkpoint['optimizer_state_dict'])
 
-    loss_list = []
+    loss_list, temp_loss_list = [], []
     for n in range(start_it, config_train['maximal_iteration']):
         train_pair = dataloader.get_subimage_batch()
-        tempx = torch.from_numpy(train_pair['images'])
-        tempy = torch.from_numpy(train_pair['labels'])
+        tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
+        tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
+
+        opt.zero_grad()
+        pred = net(tempx)
+        print("\ntrain time net pass")
 
         print("\nInside train.py - testing iter, tempx shape: " + str(tempx.shape))
         print("Inside train.py - testing iter, tempy shape: " + str(tempy.shape))
         print("Inside train.py - testing iter, pred shape: " + str(pred.shape))
 
-        opt.zero_grad()
-        pred = net(tempx)
-        loss = dice_loss(pred, tempy)
+        B, Mp, H, W, Sp = pred.shape
+        _, _, _, _, Sy = tempy.shape
+
+        pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+        tempy_ = torch.zeros([B, H, W], dtype=torch.int64)
+
+        for i in range(B):
+          for sy in range(Sy):
+            tempy_.data[i] += tempy[i, 0, :, :, sy]
+          for mp in range(Mp):
+            for sp in range(Sp):
+              pred_.data[i, mp] += pred[i, mp, :, :, sp]
+        
+        print(pred_.shape, tempy_.shape)
+
+        # TODO: one_hot in dice_loss has index-out-of-bound problem, don't know how to address
+        loss = dice_loss(pred_, tempy_)
+        print("\ntrain time dice loss pass")
         loss.backward()
         opt.step()
 
@@ -101,11 +120,24 @@ def train(config_file):
             batch_dice_list = []
             for step in range(config_train['test_step']):
                 train_pair = dataloader.get_subimage_batch()
-                tempx = torch.from_numpy(train_pair['images'])
-                tempy = torch.from_numpy(train_pair['labels'])
-
+                tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
+                tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
                 pred = net(tempx)
-                loss = dice_loss(pred, tempy)
+                
+                B, Mp, H, W, Sp = pred.shape
+                _, _, _, _, Sy = tempy.shape
+
+                pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+                tempy_ = torch.zeros([B, H, W], dtype=torch.int64)
+
+                for i in range(B):
+                  for sy in range(Sy):
+                    tempy_.data[i] += tempy[i, 0, :, :, sy]
+                  for mp in range(Mp):
+                    for sp in range(Sp):
+                      pred_.data[i, mp] += pred[i, mp, :, :, sp]
+
+                loss = dice_loss(pred_, tempy_)
                 batch_dice_list.append(loss)
             batch_dice = np.asarray(batch_dice_list, np.float32).mean()
 

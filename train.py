@@ -62,8 +62,8 @@ def train(config_file):
 
     predicty = net(x)
     # proby = torch.softmax(predicty)
-    print('\nSize of x:', x.shape)
-    print('Size of predicty:', predicty.shape)
+    # print('\nSize of x:', x.shape)
+    # print('Size of predicty:', predicty.shape)
     # print('Size of proby:', proby.shape)
     
     # 3, initialize optimizer
@@ -85,17 +85,18 @@ def train(config_file):
 
     loss_list, temp_loss_list = [], []
     for n in range(start_it, config_train['maximal_iteration']):
+        print("Inside main loop: " + str(n))
         train_pair = dataloader.get_subimage_batch()
         tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
         tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
 
         opt.zero_grad()
         pred = net(tempx)
-        print("\ntrain time net pass")
+        # print("\ntrain time net pass")
 
-        print("\nInside train.py - testing iter, tempx shape: " + str(tempx.shape))
-        print("Inside train.py - testing iter, tempy shape: " + str(tempy.shape))
-        print("Inside train.py - testing iter, pred shape: " + str(pred.shape))
+        # print("\nInside train.py - testing iter, tempx shape: " + str(tempx.shape))
+        # print("Inside train.py - testing iter, tempy shape: " + str(tempy.shape))
+        # print("Inside train.py - testing iter, pred shape: " + str(pred.shape))
 
         B, Mp, H, W, Sp = pred.shape
         _, _, _, _, Sy = tempy.shape
@@ -114,42 +115,43 @@ def train(config_file):
         print(pred_.shape, tempy_.shape)
 
         loss = dice_loss(pred_, tempy_)
-        print("\ntrain time dice loss pass")
-        
+        # print("\ntrain time dice loss pass")
+
         loss.backward()
         opt.step()
 
         if(n % config_train['test_iteration'] == 0):
-            batch_dice_list = []
-            for step in range(config_train['test_step']):
-                train_pair = dataloader.get_subimage_batch()
-                tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
-                tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
-                pred = net(tempx)
-                
-                B, Mp, H, W, Sp = pred.shape
-                _, _, _, _, Sy = tempy.shape
+          print("Inside testing loop: " + str(n))
+          batch_dice_list = []
+          for step in range(config_train['test_step']):
+              train_pair = dataloader.get_subimage_batch()
+              tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
+              tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
+              pred = net(tempx)
+              
+              B, Mp, H, W, Sp = pred.shape
+              _, _, _, _, Sy = tempy.shape
 
-                pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-                tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+              pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+              tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
 
-                for i in range(B):
-                  for sy in range(Sy):
-                    tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
-                  tempy_.data[i, 1] = tempy_.data[i, 0]
-                  for mp in range(Mp):
-                    for sp in range(Sp):
-                      pred_.data[i, mp] += pred[i, mp, :, :, sp]
+              for i in range(B):
+                for sy in range(Sy):
+                  tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
+                tempy_.data[i, 1] = tempy_.data[i, 0]
+                for mp in range(Mp):
+                  for sp in range(Sp):
+                    pred_.data[i, mp] += pred[i, mp, :, :, sp]
 
-                loss = dice_loss(pred_, tempy_)
-                batch_dice_list.append(loss)
+              loss = dice_loss(pred_, tempy_)
+              batch_dice_list.append(loss)
 
-            batch_dice = np.asarray(batch_dice_list, np.float32).mean()
+          batch_dice = np.asarray(batch_dice_list, np.float32).mean()
 
-            t = time.strftime('%X %x %Z')
-            print(t, 'n', n,'loss', batch_dice)
-            loss_list.append(batch_dice)
-            np.savetxt(loss_file, np.asarray(loss_list))
+          t = time.strftime('%X %x %Z')
+          print(t, 'n', n,'loss', batch_dice)
+          loss_list.append(batch_dice)
+          np.savetxt(loss_file, np.asarray(loss_list))
 
         if((n + 1) % config_train['snapshot_iteration'] == 0):
             torch.save({

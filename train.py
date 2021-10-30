@@ -12,7 +12,7 @@ from util.diceloss import *
 from util.parse_config import parse_config
 from util.MSNet import MSNet
 
-from torchgeometry.losses.dice import *
+# from torchgeometry.losses.dice import *
 import torch
 import torch.nn as nn
 

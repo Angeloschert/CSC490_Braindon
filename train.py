@@ -8,6 +8,7 @@ import os
 import sys
 from util.data_loader import *
 from util.train_test_func import *
+from util.diceloss import *
 from util.parse_config import parse_config
 from util.MSNet import MSNet
 
@@ -68,6 +69,7 @@ def train(config_file):
     # 3, initialize optimizer
     lr = config_train.get('learning_rate', 1e-3)
     opt = torch.optim.Adam([w], lr=lr)
+    dice_loss = DiceLoss()
     
     dataloader = DataLoader(config_data)
     dataloader.load_data()
@@ -99,11 +101,12 @@ def train(config_file):
         _, _, _, _, Sy = tempy.shape
 
         pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-        tempy_ = torch.zeros([B, H, W], dtype=torch.int64)
+        tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
 
         for i in range(B):
           for sy in range(Sy):
-            tempy_.data[i] += tempy[i, 0, :, :, sy]
+            tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
+          tempy_.data[i, 1] = tempy_.data[i, 0]
           for mp in range(Mp):
             for sp in range(Sp):
               pred_.data[i, mp] += pred[i, mp, :, :, sp]
@@ -128,17 +131,19 @@ def train(config_file):
                 _, _, _, _, Sy = tempy.shape
 
                 pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-                tempy_ = torch.zeros([B, H, W], dtype=torch.int64)
+                tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
 
                 for i in range(B):
                   for sy in range(Sy):
-                    tempy_.data[i] += tempy[i, 0, :, :, sy]
+                    tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
+                  tempy_.data[i, 1] = tempy_.data[i, 0]
                   for mp in range(Mp):
                     for sp in range(Sp):
                       pred_.data[i, mp] += pred[i, mp, :, :, sp]
 
                 loss = dice_loss(pred_, tempy_)
                 batch_dice_list.append(loss)
+
             batch_dice = np.asarray(batch_dice_list, np.float32).mean()
 
             t = time.strftime('%X %x %Z')

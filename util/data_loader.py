@@ -178,9 +178,9 @@ class DataLoader():
                 flip = False
             self.patient_id = random.randint(0, len(self.data)-1)
             data_volumes = [x for x in self.data[self.patient_id]]
-            print("\nInside get_one_batch, data_volume shape: " + str(np.array(data_volumes).shape))
+            # print("\nInside get_one_batch, data_volume shape: " + str(np.array(data_volumes).shape))
             weight_volumes = [self.weight[self.patient_id]]
-            print("Inside get_one_batch, weight_volume shape: " + str(np.array(weight_volumes).shape))
+            # print("Inside get_one_batch, weight_volume shape: " + str(np.array(weight_volumes).shape))
             boundingbox = None
             if(self.with_ground_truth):
                 label_volumes = [self.label[self.patient_id]]
@@ -215,13 +215,13 @@ class DataLoader():
                 if(self.label_convert_source and self.label_convert_target):
                     label_volumes[0] = convert_label(label_volumes[0], self.label_convert_source, self.label_convert_target)
 
-            print("Inside get_one_batch, before trasnpose_volume, data_volume shape: " + str(np.array(data_volumes).shape))
+            # print("Inside get_one_batch, before trasnpose_volume, data_volume shape: " + str(np.array(data_volumes).shape))
             transposed_volumes = transpose_volumes(data_volumes, slice_direction)
-            print("Inside get_one_batch, after trasnpose_volume, transposed_volume shape: " + str(np.array(transposed_volumes).shape))
+            # print("Inside get_one_batch, after trasnpose_volume, transposed_volume shape: " + str(np.array(transposed_volumes).shape))
             volume_shape = transposed_volumes[0].shape
             sub_data_shape = [data_slice_number, data_shape[1], data_shape[2]]
             sub_label_shape =[label_slice_number, label_shape[1], label_shape[2]]
-            print("Inside get_one_batch, after trasnpose_volume, transposed_volume shape: " + str(np.array(transposed_volumes).shape))
+            # print("Inside get_one_batch, after trasnpose_volume, transposed_volume shape: " + str(np.array(transposed_volumes).shape))
             center_point = get_random_roi_sampling_center(volume_shape, sub_label_shape, batch_sample_model, boundingbox)
             sub_data = []
             for moda in range(len(transposed_volumes)):
@@ -232,7 +232,7 @@ class DataLoader():
                     sub_data_moda = ndimage.interpolation.zoom(sub_data_moda, 1.0/down_sample_rate, order = 1)   
                 sub_data.append(sub_data_moda)
             sub_data = np.asarray(sub_data)
-            print("Inside get_one_batch, sub_data shape: " + str(sub_data.shape))
+            # print("Inside get_one_batch, sub_data shape: " + str(sub_data.shape))
             data_batch.append(sub_data)
             transposed_weight = transpose_volumes(weight_volumes, slice_direction)
             sub_weight = extract_roi_from_volume(transposed_weight[0],
@@ -258,14 +258,14 @@ class DataLoader():
                 label_batch.append([sub_label])
                     
         data_batch = np.asarray(data_batch, np.float32)
-        print("\nInside get_one_batch, data_batch shape: " + str(data_batch.shape))
+        # print("\nInside get_one_batch, data_batch shape: " + str(data_batch.shape))
         weight_batch = np.asarray(weight_batch, np.float32)
         label_batch = np.asarray(label_batch, np.int64)
         batch = {}
         batch['images']  = np.transpose(data_batch,   [0, 2, 3, 4, 1])
         batch['weights'] = np.transpose(weight_batch, [0, 2, 3, 4, 1])
         batch['labels']  = np.transpose(label_batch,  [0, 2, 3, 4, 1])
-        print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape))
+        # print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape))
         
         return batch
     

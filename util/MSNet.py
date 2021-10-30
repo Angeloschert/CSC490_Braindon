@@ -420,48 +420,55 @@ class MSNet(nn.Module):
 
 
     def forward(self, x):
-        print("\n------------------- Inside MSNet.py -------------------")
+        # print("\n------------------- Inside MSNet.py -------------------")
         f1 = x
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
+
         f1 = self.block1(f1)
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
+
         f1 = self.fuse1(f1)
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
+
         if self.is_WTNet:
             f1 = self.downsample1(f1)
         if self.base_chns[0] != self.base_chns[1]:
             f1 = self.feature_expand1(f1)
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
 
         f1 = self.block2(f1)
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
+
         f1 = self.fuse2(f1)
-        print("f1", f1.shape)
+        # print("f1", f1.shape)
+
         f2 = self.downsample2(f1)
         if self.base_chns[1] != self.base_chns[2]:
             f2 = self.feature_expand1(f2)
         f2 = self.block3(f2)
         f2 = self.fuse3(f2)
-        print("f2", f2.shape)
+        # print("f2", f2.shape)
         
         f3 = f2
         if self.base_chns[2] != self.base_chns[3]:
             f3 = self.feature_expand1(f3)
         f3 = self.block4(f3)
         f3 = self.fuse3(f3)
-        print("f3", f3.shape)
+        # print("f3", f3.shape)
         # Prediction
 
         p1 = self.centra_slice1(f1)
-        print(f1.shape, p1.shape)
-        print(p1.shape)
+        # print(f1.shape, p1.shape)
+        # print(p1.shape)
+
         if self.is_WTNet:
             p1 = self.pred_1WT(p1)
         else:
             p1 = self.pred_1E(p1)
 
         p2 = self.centra_slice2(f2)
-        print(f2.shape, p2.shape)
+        # print(f2.shape, p2.shape)
+
         p2 = self.pred_21(p2)
         if self.is_WTNet:
             p2 = self.pred_22(p2)
@@ -470,8 +477,8 @@ class MSNet(nn.Module):
         if self.is_WTNet:
             p3 = self.pred_32(p3)
 
-        print(p1.shape, p2.shape, p3.shape)
+        # print(p1.shape, p2.shape, p3.shape)
         combine = torch.cat([p1, p2, p3], 1)
-        print(combine.shape)
-        print("------------------- Exit MSNet.py -------------------")
+        # print(combine.shape)
+        # print("------------------- Exit MSNet.py -------------------")
         return self.final_pred(combine)

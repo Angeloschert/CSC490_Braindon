@@ -113,9 +113,9 @@ def train(config_file):
         
         print(pred_.shape, tempy_.shape)
 
-        # TODO: one_hot in dice_loss has index-out-of-bound problem, don't know how to address
         loss = dice_loss(pred_, tempy_)
         print("\ntrain time dice loss pass")
+        
         loss.backward()
         opt.step()
 

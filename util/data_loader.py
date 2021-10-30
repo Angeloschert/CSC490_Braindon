@@ -265,7 +265,7 @@ class DataLoader():
         batch['images']  = np.transpose(data_batch,   [0, 2, 3, 4, 1])
         batch['weights'] = np.transpose(weight_batch, [0, 2, 3, 4, 1])
         batch['labels']  = np.transpose(label_batch,  [0, 2, 3, 4, 1])
-        print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape + "\n"))
+        print("Inside get_one_batch, batch[images] shape: " + str(batch['images'].shape))
         
         return batch
     

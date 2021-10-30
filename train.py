@@ -27,6 +27,23 @@ class NetFactory(object):
         print('unsupported network:', name)
         exit()
 
+def diceProprocess(pred, tempy):
+    B, Mp, H, W, Sp = pred.shape
+    _, _, _, _, Sy = tempy.shape
+
+    pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+    tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
+
+    for i in range(B):
+      for sy in range(Sy):
+        tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
+      tempy_.data[i, 1] = tempy_.data[i, 0]
+      for mp in range(Mp):
+        for sp in range(Sp):
+          pred_.data[i, mp] += pred[i, mp, :, :, sp]
+
+    return pred_, tempy_
+
 def train(config_file):
     # 1, load configuration parameters
     config = parse_config(config_file)
@@ -98,22 +115,7 @@ def train(config_file):
         # print("Inside train.py - testing iter, tempy shape: " + str(tempy.shape))
         # print("Inside train.py - testing iter, pred shape: " + str(pred.shape))
 
-        B, Mp, H, W, Sp = pred.shape
-        _, _, _, _, Sy = tempy.shape
-
-        pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-        tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-
-        for i in range(B):
-          for sy in range(Sy):
-            tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
-          tempy_.data[i, 1] = tempy_.data[i, 0]
-          for mp in range(Mp):
-            for sp in range(Sp):
-              pred_.data[i, mp] += pred[i, mp, :, :, sp]
-        
-        print(pred_.shape, tempy_.shape)
-
+        pred_, tempy_ = diceProprocess(pred, tempy)
         loss = dice_loss(pred_, tempy_)
         # print("\ntrain time dice loss pass")
 
@@ -123,26 +125,13 @@ def train(config_file):
         if(n % config_train['test_iteration'] == 0):
           batch_dice_list = []
           for step in range(config_train['test_step']):
-              print("Inside testing loop: " + str(n))
+              print("\nInside testing loop: " + str(n))
               train_pair = dataloader.get_subimage_batch()
               tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
               tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))
               pred = net(tempx)
               
-              B, Mp, H, W, Sp = pred.shape
-              _, _, _, _, Sy = tempy.shape
-
-              pred_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-              tempy_ = torch.zeros([B, Mp, H, W], dtype=torch.float32, requires_grad=True)
-
-              for i in range(B):
-                for sy in range(Sy):
-                  tempy_.data[i, 0] += tempy[i, 0, :, :, sy]
-                tempy_.data[i, 1] = tempy_.data[i, 0]
-                for mp in range(Mp):
-                  for sp in range(Sp):
-                    pred_.data[i, mp] += pred[i, mp, :, :, sp]
-
+              pred_, tempy_ = diceProprocess(pred, tempy)
               loss = dice_loss(pred_, tempy_)
               batch_dice_list.append(loss)
 

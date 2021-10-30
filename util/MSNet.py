@@ -104,15 +104,15 @@ class MSNet(nn.Module):
         self.is_WTNet = True
 
         def init_weights(m):
-            if isinstance(m, ResBlock) or isinstance(m, Conv2dBlock):
+            if type(m) == ResBlock or type(m) == Conv2dBlock:
                 try:
                   torch.nn.init.xavier_normal_(m.w_init)
                 except:
-                  pass
+                  print("No w_init in " + str(m))
                 try:
                   torch.nn.init.xavier_normal_(m.b_init)
                 except:
-                  pass
+                  print("No b_init in " + str(m))
 
         # First Block
 

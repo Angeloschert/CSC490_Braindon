@@ -121,9 +121,9 @@ def train(config_file):
         opt.step()
 
         if(n % config_train['test_iteration'] == 0):
-          print("Inside testing loop: " + str(n))
           batch_dice_list = []
           for step in range(config_train['test_step']):
+              print("Inside testing loop: " + str(n))
               train_pair = dataloader.get_subimage_batch()
               tempx = torch.from_numpy(train_pair['images'].swapaxes(1, 4))
               tempy = torch.from_numpy(train_pair['labels'].swapaxes(1, 4))

@@ -13,6 +13,7 @@ data_shape          = [4, 180, 160, 19]
 label_shape         = [1, 180, 160, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32_20000.ckpt
+model_save_prefix   = model17/msnet_wt32_20000
 
 [network1sg]
 net_type            = MSNet
@@ -22,6 +23,7 @@ data_shape          = [4, 160, 180, 19]
 label_shape         = [1, 160, 180, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32sg_20000.ckpt
+model_save_prefix   = model17/msnet_wt32sg_20000
 
 [network1cr]
 net_type            = MSNet
@@ -31,6 +33,7 @@ data_shape          = [4, 160, 160, 19]
 label_shape         = [1, 160, 160, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32cr_20000.ckpt
+model_save_prefix   = model17/msnet_wt32cr_20000
 
 [testing]
 test_slice_direction = all

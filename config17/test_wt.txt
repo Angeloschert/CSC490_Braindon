@@ -1,39 +1,39 @@
 [data]
-data_root         = /home/guotwang/data/Brats17TrainingData
+data_root         = /Users/peterzhang/Documents/GitHub/CSC490_Braindon/BRATS2017/Brats17TrainingData
 save_folder       = result17
 data_names        = config17/test_names_temp.txt
 modality_postfix  = [flair, t1, t1ce, t2]
 file_postfix      = nii.gz
 
-[network1ax]
+[network1]
 net_type            = MSNet
-net_name            = MSNet_WT32
+net_name            = MSNet_1
 downsample_twice    = True
 data_shape          = [4, 180, 160, 19]
 label_shape         = [1, 180, 160, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32_20000.ckpt
-model_save_prefix   = model17/msnet_wt32_300
+model_save_prefix   = model17/msnet_1_300
 
-[network1sg]
+[network2]
 net_type            = MSNet
-net_name            = MSNet_WT32sg
+net_name            = MSNet_2
 downsample_twice    = True
 data_shape          = [4, 160, 180, 19]
 label_shape         = [1, 160, 180, 11]
 class_num           = 2
 model_file          = model17/msnet_wt32sg_20000.ckpt
-model_save_prefix   = model17/msnet_wt32sg_300
+model_save_prefix   = model17/msnet_2_300
 
-[network1cr]
+[network3]
 net_type            = MSNet
-net_name            = MSNet_WT32cr
+net_name            = MSNet_3
 downsample_twice    = True
 data_shape          = [4, 160, 160, 19]
 label_shape         = [1, 160, 160, 11]
 class_num           = 2
-model_file          = model17/msnet_wt32cr_20000.ckpt
-model_save_prefix   = model17/msnet_wt32cr_300
+model_file          = model17/msnet_3_20000.ckpt
+model_save_prefix   = model17/msnet_3_300
 
 [testing]
 test_slice_direction = all

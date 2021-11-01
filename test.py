@@ -52,8 +52,8 @@ def test(config_file):
         net1 = net_class1(num_classes=class_num1, w_reg=None,
                           b_reg=None, in_chns=full_data_shape1[1])
         # net1.set_params(config_net1)
-        net1.load_state_dict(torch.load(model_save_prefix1, map_location=device))
-        predicty1 = net1(x1, is_training=True)
+        net1.load_state_dict(torch.load(model_save_prefix1, map_location=device)["model_state_dict"])
+        predicty1 = net1(x1)
         softmax1 = torch.nn.Softmax(dim=-1)
         # proby1 = tf.nn.softmax(predicty1)
         proby1 = softmax1(predicty1)
@@ -77,8 +77,8 @@ def test(config_file):
         net1ax = net_class1ax(num_classes=class_num1ax, w_reg=None,
                               b_reg=None, in_chns=full_data_shape1ax[1])
         # net1ax.set_params(config_net1ax)
-        net1ax.load_state_dict(torch.load(model_save_prefix1ax, map_location=device))
-        predicty1ax = net1ax(x1ax, is_training=True)
+        net1ax.load_state_dict(torch.load(model_save_prefix1ax, map_location=device)["model_state_dict"])
+        predicty1ax = net1ax(x1ax)
         softmax1ax = torch.nn.Softmax(dim=-1)
         # proby1ax = tf.nn.softmax(predicty1ax)
         proby1ax = softmax1ax(predicty1ax)
@@ -98,8 +98,8 @@ def test(config_file):
         net1sg = net_class1sg(num_classes=class_num1sg, w_reg=None,
                               b_reg=None, in_chns=full_data_shape1sg[1])
         # net1sg.set_params(config_net1sg)
-        net1sg.load_state_dict(torch.load(model_save_prefix1sg, map_location=device))
-        predicty1sg = net1sg(x1sg, is_training=True)
+        net1sg.load_state_dict(torch.load(model_save_prefix1sg, map_location=device)["model_state_dict"])
+        predicty1sg = net1sg(x1sg)
         # proby1sg = tf.nn.softmax(predicty1sg)
         softmax1sg = torch.nn.Softmax(dim=-1)
         proby1sg = softmax1sg(predicty1sg)
@@ -119,8 +119,8 @@ def test(config_file):
         net1cr = net_class1cr(num_classes=class_num1cr, w_reg=None,
                               b_reg=None, in_chns=full_data_shape1cr[1])
         # net1cr.set_params(config_net1cr)
-        net1cr.load_state_dict(torch.load(model_save_prefix1cr, map_location=device))
-        predicty1cr = net1cr(x1cr, is_training=True)
+        net1cr.load_state_dict(torch.load(model_save_prefix1cr, map_location=device)["model_state_dict"])
+        predicty1cr = net1cr(x1cr)
         # proby1cr = tf.nn.softmax(predicty1cr)
         softmax1cr = torch.nn.Softmax(dim=-1)
         proby1cr = softmax1cr(predicty1cr)
@@ -143,7 +143,7 @@ def test(config_file):
             net2 = net_class2(num_classes=class_num2, w_reg=None,
                               b_reg=None, in_chns=full_data_shape2[1])
             # net2.set_params(config_net2)
-            net2.load_state_dict(torch.load(model_save_prefix2, map_location=device))
+            net2.load_state_dict(torch.load(model_save_prefix2, map_location=device)["model_state_dict"])
             predicty2 = net2(x2, is_training=True)
             # proby2 = tf.nn.softmax(predicty2)
             softmax2 = torch.nn.Softmax(dim=-1)
@@ -169,7 +169,7 @@ def test(config_file):
             net2ax = net_class2ax(num_classes=class_num2ax, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape2ax[1])
             # net2ax.set_params(config_net2ax)
-            net2ax.load_state_dict(torch.load(model_save_prefix2ax, map_location=device))
+            net2ax.load_state_dict(torch.load(model_save_prefix2ax, map_location=device)["model_state_dict"])
             predicty2ax = net2ax(x2ax, is_training=True)
             softmax2ax = torch.nn.Softmax(dim=-1)
             # proby2ax = tf.nn.softmax(predicty2ax)
@@ -190,8 +190,8 @@ def test(config_file):
             net2sg = net_class2sg(num_classes=class_num2sg, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape2sg[1])
             # net2sg.set_params(config_net2sg)
-            net2sg.load_state_dict(torch.load(model_save_prefix2sg, map_location=device))
-            predicty2sg = net2sg(x2sg, is_training=True)
+            net2sg.load_state_dict(torch.load(model_save_prefix2sg, map_location=device)["model_state_dict"])
+            predicty2sg = net2sg(x2sg)
             # proby2sg = tf.nn.softmax(predicty2sg)
             softmax2sg = torch.nn.Softmax(dim=-1)
             proby2sg = softmax2sg(predicty2sg)
@@ -211,8 +211,8 @@ def test(config_file):
             net2cr = net_class2cr(num_classes=class_num2cr, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape2cr[1])
             # net2cr.set_params(config_net2cr)
-            net2cr.load_state_dict(torch.load(model_save_prefix2cr, map_location=device))
-            predicty2cr = net2cr(x2cr, is_training=True)
+            net2cr.load_state_dict(torch.load(model_save_prefix2cr, map_location=device)["model_state_dict"])
+            predicty2cr = net2cr(x2cr)
             # proby2cr = tf.nn.softmax(predicty2cr)
             softmax2cr = torch.nn.Softmax(dim=-1)
             proby2cr = softmax2cr(predicty2cr)
@@ -234,8 +234,8 @@ def test(config_file):
             net3 = net_class3(num_classes=class_num3, w_reg=None,
                               b_reg=None, in_chns=full_data_shape3[1])
             # net3.set_params(config_net3)
-            net3.load_state_dict(torch.load(model_save_prefix3, map_location=device))
-            predicty3 = net3(x3, is_training=True)
+            net3.load_state_dict(torch.load(model_save_prefix3, map_location=device)["model_state_dict"])
+            predicty3 = net3(x3)
             # proby3 = tf.nn.softmax(predicty3)
             softmax3 = torch.nn.Softmax(dim=-1)
             proby3 = softmax3(predicty3)
@@ -259,8 +259,8 @@ def test(config_file):
             net3ax = net_class3ax(num_classes=class_num3ax, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape3ax[1])
             # net3ax.set_params(config_net3ax)
-            net3ax.load_state_dict(torch.load(model_save_prefix3ax, map_location=device))
-            predicty3ax = net3ax(x3ax, is_training=True)
+            net3ax.load_state_dict(torch.load(model_save_prefix3ax, map_location=device)["model_state_dict"])
+            predicty3ax = net3ax(x3ax)
             # proby3ax = tf.nn.softmax(predicty3ax)
             softmax3ax = torch.nn.Softmax(dim=-1)
             proby3ax = softmax3ax(predicty3ax)
@@ -281,8 +281,8 @@ def test(config_file):
             net3sg = net_class3sg(num_classes=class_num3sg, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape3sg[1])
             # net3sg.set_params(config_net3sg)
-            net3sg.load_state_dict(torch.load(model_save_prefix3sg, map_location=device))
-            predicty3sg = net3sg(x3sg, is_training=True)
+            net3sg.load_state_dict(torch.load(model_save_prefix3sg, map_location=device)["model_state_dict"])
+            predicty3sg = net3sg(x3sg)
             # proby3sg = tf.nn.softmax(predicty3sg)
             softmax3sg = torch.nn.Softmax(dim=-1)
             proby3sg = softmax3sg(predicty3sg)
@@ -303,8 +303,8 @@ def test(config_file):
             net3cr = net_class3cr(num_classes=class_num3cr, w_reg=None,
                                   b_reg=None, in_chns=full_data_shape3cr[1])
             # net3cr.set_params(config_net3cr)
-            net3cr.load_state_dict(torch.load(model_save_prefix3cr, map_location=device))
-            predicty3cr = net3cr(x3cr, is_training=True)
+            net3cr.load_state_dict(torch.load(model_save_prefix3cr, map_location=device)["model_state_dict"])
+            predicty3cr = net3cr(x3cr)
             softmax3cr = torch.nn.Softmax(dim=-1)
             # proby3cr = tf.nn.softmax(predicty3cr)
             proby3cr = softmax3cr(predicty3cr)
@@ -360,6 +360,8 @@ def test(config_file):
     #         saver3cr.restore(sess, config_net3cr['model_file'])
 
     # 4, load test images
+    import os
+    print(os.curdir)
     dataloader = DataLoader(config_data)
     dataloader.load_data()
     image_num = dataloader.get_total_image_number()
@@ -375,8 +377,10 @@ def test(config_file):
         [temp_imgs, temp_weight, temp_name, img_names, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
         t0 = time.time()
         # 5.1, test of 1st network
+        data_shape = None
         if (config_net1):
             data_shapes = [data_shape1[:-1], data_shape1[:-1], data_shape1[:-1]]
+            data_shape = data_shape1
             label_shapes = [label_shape1[:-1], label_shape1[:-1], label_shape1[:-1]]
             nets = [net1, net1, net1]
             outputs = [proby1, proby1, proby1]
@@ -384,12 +388,13 @@ def test(config_file):
             class_num = class_num1
         else:
             data_shapes = [data_shape1ax[:-1], data_shape1sg[:-1], data_shape1cr[:-1]]
+            data_shape = data_shape1ax[-1]
             label_shapes = [label_shape1ax[:-1], label_shape1sg[:-1], label_shape1cr[:-1]]
             nets = [net1ax, net1sg, net1cr]
             outputs = [proby1ax, proby1sg, proby1cr]
             inputs = [x1ax, x1sg, x1cr]
             class_num = class_num1ax
-        prob1 = test_one_image_three_nets_adaptive_shape(temp_imgs, data_shapes, label_shapes, data_shape1ax[-1],
+        prob1 = test_one_image_three_nets_adaptive_shape(temp_imgs, data_shapes, label_shapes, data_shape[-1],
                                                          class_num,
                                                          batch_size, nets, outputs, inputs, shape_mode=2)
         pred1 = np.asarray(np.argmax(prob1, axis=3), np.uint16)

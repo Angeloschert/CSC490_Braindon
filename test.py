@@ -25,6 +25,7 @@ from train import NetFactory
 
 
 def test(config_file):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # 1, load configure file
     config = parse_config(config_file)
     config_data = config['data']
@@ -48,10 +49,10 @@ def test(config_file):
         # x1 = tf.placeholder(tf.float32, shape = full_data_shape1) 
         x1 = torch.zeros(full_data_shape1, dtype=torch.float32, requires_grad=True)
         net_class1 = NetFactory.create(net_type1)
-        net1 = net_class1(num_classes=class_num1, w_regularizer=None,
-                          b_regularizer=None, name=net_name1)
+        net1 = net_class1(num_classes=class_num1, w_reg=None,
+                          b_reg=None, in_chns=full_data_shape1[1])
         # net1.set_params(config_net1)
-        net1.load_state_dict(torch.load(model_save_prefix1))
+        net1.load_state_dict(torch.load(model_save_prefix1, map_location=device))
         predicty1 = net1(x1, is_training=True)
         softmax1 = torch.nn.Softmax(dim=-1)
         # proby1 = tf.nn.softmax(predicty1)
@@ -73,10 +74,10 @@ def test(config_file):
         # x1ax = tf.placeholder(tf.float32, shape = full_data_shape1ax)
         x1ax = torch.zeros(full_data_shape1ax, dtype=torch.float32, requires_grad=True)
         net_class1ax = NetFactory.create(net_type1ax)
-        net1ax = net_class1ax(num_classes=class_num1ax, w_regularizer=None,
-                              b_regularizer=None, name=net_name1ax)
+        net1ax = net_class1ax(num_classes=class_num1ax, w_reg=None,
+                              b_reg=None, in_chns=full_data_shape1ax[1])
         # net1ax.set_params(config_net1ax)
-        net1ax.load_state_dict(torch.load(model_save_prefix1ax))
+        net1ax.load_state_dict(torch.load(model_save_prefix1ax, map_location=device))
         predicty1ax = net1ax(x1ax, is_training=True)
         softmax1ax = torch.nn.Softmax(dim=-1)
         # proby1ax = tf.nn.softmax(predicty1ax)
@@ -94,10 +95,10 @@ def test(config_file):
         # x1sg = tf.placeholder(tf.float32, shape = full_data_shape1sg)
         x1sg = torch.zeros(full_data_shape1sg, dtype=torch.float32, requires_grad=True)
         net_class1sg = NetFactory.create(net_type1sg)
-        net1sg = net_class1sg(num_classes=class_num1sg, w_regularizer=None,
-                              b_regularizer=None, name=net_name1sg)
+        net1sg = net_class1sg(num_classes=class_num1sg, w_reg=None,
+                              b_reg=None, in_chns=full_data_shape1sg[1])
         # net1sg.set_params(config_net1sg)
-        net1sg.load_state_dict(torch.load(model_save_prefix1sg))
+        net1sg.load_state_dict(torch.load(model_save_prefix1sg, map_location=device))
         predicty1sg = net1sg(x1sg, is_training=True)
         # proby1sg = tf.nn.softmax(predicty1sg)
         softmax1sg = torch.nn.Softmax(dim=-1)
@@ -115,10 +116,10 @@ def test(config_file):
         # x1cr = tf.placeholder(tf.float32, shape = full_data_shape1cr)
         x1cr = torch.zeros(full_data_shape1cr, dtype=torch.float32, requires_grad=True)
         net_class1cr = NetFactory.create(net_type1cr)
-        net1cr = net_class1cr(num_classes=class_num1cr, w_regularizer=None,
-                              b_regularizer=None, name=net_name1cr)
+        net1cr = net_class1cr(num_classes=class_num1cr, w_reg=None,
+                              b_reg=None, in_chns=full_data_shape1cr[1])
         # net1cr.set_params(config_net1cr)
-        net1cr.load_state_dict(torch.load(model_save_prefix1cr))
+        net1cr.load_state_dict(torch.load(model_save_prefix1cr, map_location=device))
         predicty1cr = net1cr(x1cr, is_training=True)
         # proby1cr = tf.nn.softmax(predicty1cr)
         softmax1cr = torch.nn.Softmax(dim=-1)
@@ -139,10 +140,10 @@ def test(config_file):
             # x2 = tf.placeholder(tf.float32, shape = full_data_shape2)
             x2 = torch.zeros(full_data_shape2, dtype=torch.float32, requires_grad=True)
             net_class2 = NetFactory.create(net_type2)
-            net2 = net_class2(num_classes=class_num2, w_regularizer=None,
-                              b_regularizer=None, name=net_name2)
+            net2 = net_class2(num_classes=class_num2, w_reg=None,
+                              b_reg=None, in_chns=full_data_shape2[1])
             # net2.set_params(config_net2)
-            net2.load_state_dict(torch.load(model_save_prefix2))
+            net2.load_state_dict(torch.load(model_save_prefix2, map_location=device))
             predicty2 = net2(x2, is_training=True)
             # proby2 = tf.nn.softmax(predicty2)
             softmax2 = torch.nn.Softmax(dim=-1)
@@ -165,10 +166,10 @@ def test(config_file):
             x2ax = torch.zeros(full_data_shape2ax, dtype=torch.float32, requires_grad=True)
 
             net_class2ax = NetFactory.create(net_type2ax)
-            net2ax = net_class2ax(num_classes=class_num2ax, w_regularizer=None,
-                                  b_regularizer=None, name=net_name2ax)
+            net2ax = net_class2ax(num_classes=class_num2ax, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape2ax[1])
             # net2ax.set_params(config_net2ax)
-            net2ax.load_state_dict(torch.load(model_save_prefix2ax))
+            net2ax.load_state_dict(torch.load(model_save_prefix2ax, map_location=device))
             predicty2ax = net2ax(x2ax, is_training=True)
             softmax2ax = torch.nn.Softmax(dim=-1)
             # proby2ax = tf.nn.softmax(predicty2ax)
@@ -186,10 +187,10 @@ def test(config_file):
             # x2sg = tf.placeholder(tf.float32, shape = full_data_shape2sg)
             x2sg = torch.zeros(full_data_shape2sg, dtype=torch.float32, requires_grad=True)
             net_class2sg = NetFactory.create(net_type2sg)
-            net2sg = net_class2sg(num_classes=class_num2sg, w_regularizer=None,
-                                  b_regularizer=None, name=net_name2sg)
+            net2sg = net_class2sg(num_classes=class_num2sg, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape2sg[1])
             # net2sg.set_params(config_net2sg)
-            net2sg.load_state_dict(torch.load(model_save_prefix2sg))
+            net2sg.load_state_dict(torch.load(model_save_prefix2sg, map_location=device))
             predicty2sg = net2sg(x2sg, is_training=True)
             # proby2sg = tf.nn.softmax(predicty2sg)
             softmax2sg = torch.nn.Softmax(dim=-1)
@@ -207,10 +208,10 @@ def test(config_file):
             # x2cr = tf.placeholder(tf.float32, shape = full_data_shape2cr)
             x2cr = torch.zeros(full_data_shape2cr, dtype=torch.float32, requires_grad=True)
             net_class2cr = NetFactory.create(net_type2cr)
-            net2cr = net_class2cr(num_classes=class_num2cr, w_regularizer=None,
-                                  b_regularizer=None, name=net_name2cr)
+            net2cr = net_class2cr(num_classes=class_num2cr, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape2cr[1])
             # net2cr.set_params(config_net2cr)
-            net2cr.load_state_dict(torch.load(model_save_prefix2cr))
+            net2cr.load_state_dict(torch.load(model_save_prefix2cr, map_location=device))
             predicty2cr = net2cr(x2cr, is_training=True)
             # proby2cr = tf.nn.softmax(predicty2cr)
             softmax2cr = torch.nn.Softmax(dim=-1)
@@ -230,10 +231,10 @@ def test(config_file):
             # x3 = tf.placeholder(tf.float32, shape = full_data_shape3)
             x3 = torch.zeros(full_data_shape3, dtype=torch.float32, requires_grad=True)
             net_class3 = NetFactory.create(net_type3)
-            net3 = net_class3(num_classes=class_num3, w_regularizer=None,
-                              b_regularizer=None, name=net_name3)
+            net3 = net_class3(num_classes=class_num3, w_reg=None,
+                              b_reg=None, in_chns=full_data_shape3[1])
             # net3.set_params(config_net3)
-            net3.load_state_dict(torch.load(model_save_prefix3))
+            net3.load_state_dict(torch.load(model_save_prefix3, map_location=device))
             predicty3 = net3(x3, is_training=True)
             # proby3 = tf.nn.softmax(predicty3)
             softmax3 = torch.nn.Softmax(dim=-1)
@@ -255,10 +256,10 @@ def test(config_file):
             # x3ax = tf.placeholder(tf.float32, shape = full_data_shape3ax)
             x3ax = torch.zeros(full_data_shape3ax, dtype=torch.float32, requires_grad=True)
             net_class3ax = NetFactory.create(net_type3ax)
-            net3ax = net_class3ax(num_classes=class_num3ax, w_regularizer=None,
-                                  b_regularizer=None, name=net_name3ax)
+            net3ax = net_class3ax(num_classes=class_num3ax, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape3ax[1])
             # net3ax.set_params(config_net3ax)
-            net3ax.load_state_dict(torch.load(model_save_prefix3ax))
+            net3ax.load_state_dict(torch.load(model_save_prefix3ax, map_location=device))
             predicty3ax = net3ax(x3ax, is_training=True)
             # proby3ax = tf.nn.softmax(predicty3ax)
             softmax3ax = torch.nn.Softmax(dim=-1)
@@ -277,10 +278,10 @@ def test(config_file):
             # x3sg = tf.placeholder(tf.float32, shape = full_data_shape3sg)
             x3sg = torch.zeros(full_data_shape3sg, dtype=torch.float32, requires_grad=True)
             net_class3sg = NetFactory.create(net_type3sg)
-            net3sg = net_class3sg(num_classes=class_num3sg, w_regularizer=None,
-                                  b_regularizer=None, name=net_name3sg)
+            net3sg = net_class3sg(num_classes=class_num3sg, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape3sg[1])
             # net3sg.set_params(config_net3sg)
-            net3sg.load_state_dict(torch.load(model_save_prefix3sg))
+            net3sg.load_state_dict(torch.load(model_save_prefix3sg, map_location=device))
             predicty3sg = net3sg(x3sg, is_training=True)
             # proby3sg = tf.nn.softmax(predicty3sg)
             softmax3sg = torch.nn.Softmax(dim=-1)
@@ -299,10 +300,10 @@ def test(config_file):
             # x3cr = tf.placeholder(tf.float32, shape = full_data_shape3cr)
             x3cr = torch.zeros(full_data_shape3cr, dtype=torch.float32, requires_grad=True)
             net_class3cr = NetFactory.create(net_type3cr)
-            net3cr = net_class3cr(num_classes=class_num3cr, w_regularizer=None,
-                                  b_regularizer=None, name=net_name3cr)
+            net3cr = net_class3cr(num_classes=class_num3cr, w_reg=None,
+                                  b_reg=None, in_chns=full_data_shape3cr[1])
             # net3cr.set_params(config_net3cr)
-            net3cr.load_state_dict(torch.load(model_save_prefix3cr))
+            net3cr.load_state_dict(torch.load(model_save_prefix3cr, map_location=device))
             predicty3cr = net3cr(x3cr, is_training=True)
             softmax3cr = torch.nn.Softmax(dim=-1)
             # proby3cr = tf.nn.softmax(predicty3cr)

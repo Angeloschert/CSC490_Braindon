@@ -22,7 +22,7 @@ from util.diceloss import *
 # from torchgeometry.losses.dice import *
 import torch
 import torch.nn as nn
-from kornia.losses import DiceLoss as KDiceLoss
+# from kornia.losses import DiceLoss as KDiceLoss
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -77,6 +77,7 @@ def Dice(inp, target, eps=1):
 
 
 config_file = './config17/train_wt_ax.txt'
+# config_file = './config17/train_wt_ax_local.txt'
 
 
 # In[10]:

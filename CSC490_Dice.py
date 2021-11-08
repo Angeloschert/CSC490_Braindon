@@ -207,8 +207,8 @@ for n in range(start_it, config_train['maximal_iteration']):
                 tempy = tempy.reshape((-1, 144, 144, 11))
                 loss = dice_loss(pred, tempy)
                 pred = torch.max(pred, dim=1).indices
-                # dice_score += Dice(pred.cpu().numpy(), tempy.cpu().numpy())
-                dice_score += (1. - loss).item()
+                dice_score += Dice(pred.cpu().numpy(), tempy.cpu().numpy())
+                # dice_score += (1. - loss).item()
                 # pred, tempy = diceProprocess(pred, tempy)
                 # loss = dice_loss(pred, tempy)
                 batch_dice_list.append(loss.cpu().numpy())

@@ -78,7 +78,7 @@ def Dice(inp, target, eps=1):
 # In[9]:
 
 
-config_file = './config17/train_wt_ax_local.txt'
+config_file = './config17/train_wt_ax.txt'
 # config_file = './config17/train_wt_ax_local.txt'
 
 

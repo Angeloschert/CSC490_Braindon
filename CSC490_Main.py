@@ -61,7 +61,14 @@ def diceProprocess(pred, tempy):
 
 
 # In[ ]:
-
+def Dice(inp, target, eps=1):
+	# 抹平了，弄成一维的
+    input_flatten = inp.flatten()
+    target_flatten = target.flatten()
+    # 计算交集中的数量
+    overlap = np.sum(input_flatten * target_flatten)
+    # 返回值，让值在0和1之间波动
+    return np.clip(((2. * overlap) / (np.sum(target_flatten) + np.sum(input_flatten) + eps)), 1e-4, 0.9999)
 
 
 
@@ -133,7 +140,8 @@ print('=======  ============', count, '=====================')
 # 3, initialize optimizer
 lr = config_train.get('learning_rate', 1)
 opt = torch.optim.Adam(net.parameters(), lr=lr)
-dice_loss = DiceLoss().to(device)
+# dice_loss = DiceLoss().to(device)
+dice_loss = BinaryDiceLoss().to(device)
 # dice_loss = KDiceLoss().to(device)
 ce_loss = nn.CrossEntropyLoss().to(device)
 
@@ -153,9 +161,14 @@ loss_list, temp_loss_list = [], []
 for n in range(start_it, config_train['maximal_iteration']):
     # print("Inside main loop: " + str(n))
     train_pair = dataloader.get_subimage_batch()
-    tempx = torch.permute(torch.from_numpy(train_pair['images']), [0, 4, 2, 3 ,1]).to(device)
-    tempy = torch.permute(torch.from_numpy(train_pair['labels']), [0, 4, 2, 3 ,1]).to(device)
+    tempx = torch.permute(torch.from_numpy(train_pair['images']), [0, 4, 3,2 ,1]).to(device)
+    tempy = torch.permute(torch.from_numpy(train_pair['labels']), [0, 4, 3,2 ,1]).to(device)
     pred = net(tempx)
+    # pred = torch.max(pred, dim=1).indices
+    # print(tempy.shape)
+    # print(pred.shape)
+    # print(pred.shape)
+    # print(torch.unique(pred))
     # print("\ntrain time net pass")
 
     # pred, tempy = diceProprocess(pred, tempy)
@@ -169,8 +182,10 @@ for n in range(start_it, config_train['maximal_iteration']):
     # loss = dice_loss(pred, tempy)
     tempy = tempy.reshape((-1, 144, 144, 11))
     loss = ce_loss(pred, tempy)
-    opt.zero_grad()
     # loss = dice_loss(pred, tempy)
+    # loss = dice_loss(pred, tempy)
+    opt.zero_grad()
+    
     # print("\ntrain time dice loss pass")
 
     loss.backward()
@@ -178,23 +193,26 @@ for n in range(start_it, config_train['maximal_iteration']):
 
     if (n % config_train['test_iteration'] == 0):
         batch_dice_list = []
+        dice_score = 0.0
         with torch.no_grad():
             for step in range(config_train['test_step']):
                 # print("\nInside testing loop: " + str(step))
                 train_pair = dataloader.get_subimage_batch()
-                tempx = torch.permute(torch.from_numpy(train_pair['images']), [0, 4, 2, 3 ,1]).to(device)
-                tempy = torch.permute(torch.from_numpy(train_pair['labels']), [0, 4, 2, 3 ,1]).to(device)
+                tempx = torch.permute(torch.from_numpy(train_pair['images']), [0, 4, 3, 2 ,1]).to(device)
+                tempy = torch.permute(torch.from_numpy(train_pair['labels']), [0, 4, 3, 2 ,1]).to(device)
                 pred = net(tempx)
                 tempy = tempy.reshape((-1, 144, 144, 11))
                 loss = ce_loss(pred, tempy)
+                pred = torch.max(pred, dim=1).indices
+                dice_score += Dice(pred.cpu().numpy(), tempy.cpu().numpy())
                 # pred, tempy = diceProprocess(pred, tempy)
                 # loss = dice_loss(pred, tempy)
-                batch_dice_list.append(loss)
+                batch_dice_list.append(loss.cpu().numpy())
 
             batch_dice = np.asarray(batch_dice_list, np.float32).mean()
 
             t = time.strftime('%X %x %Z')
-            print(t, 'n', n, 'loss', batch_dice)
+            print(t, 'n', n, 'loss', batch_dice, "DICE", dice_score / len(batch_dice_list), len(batch_dice_list))
             loss_list.append(batch_dice)
             np.savetxt(loss_file, np.asarray(loss_list))
 

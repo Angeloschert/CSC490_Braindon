@@ -374,13 +374,17 @@ def test(config_file):
     margin = config_test.get('roi_patch_margin', 5)
 
     for i in range(image_num):
+
+        # temp_imgs[155, h, w, 4]
         [temp_imgs, temp_weight, temp_name, img_names, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
         t0 = time.time()
         # 5.1, test of 1st network
         data_shape = None
         if (config_net1):
+            # data_shape [19, 180, 160, 4]
             data_shapes = [data_shape1[:-1], data_shape1[:-1], data_shape1[:-1]]
             data_shape = data_shape1
+            # label shape [11, 180, 160, 1]
             label_shapes = [label_shape1[:-1], label_shape1[:-1], label_shape1[:-1]]
             nets = [net1, net1, net1]
             outputs = [proby1, proby1, proby1]
@@ -394,9 +398,12 @@ def test(config_file):
             outputs = [proby1ax, proby1sg, proby1cr]
             inputs = [x1ax, x1sg, x1cr]
             class_num = class_num1ax
+
+        # prob1 shape []
         prob1 = test_one_image_three_nets_adaptive_shape(temp_imgs, data_shapes, label_shapes, data_shape[-1],
                                                          class_num,
                                                          batch_size, nets, outputs, inputs, shape_mode=2)
+        print("Prob1 shape is: " + str(prob1.shape))
         pred1 = np.asarray(np.argmax(prob1, axis=3), np.uint16)
         pred1 = pred1 * temp_weight
 

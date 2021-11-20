@@ -1,0 +1,186 @@
+/content
+Using CRF
+=============== Segmenting ===============
+data data_root gdrive/MyDrive/BRATS2017/Brats17TrainingData gdrive/MyDrive/BRATS2017/Brats17TrainingData
+data save_folder result17 result17
+data data_names CSC490_Braindon/config17/test_names_temp.txt CSC490_Braindon/config17/test_names_temp.txt
+data modality_postfix [flair, t1, t1ce, t2] ['flair', 't1', 't1ce', 't2']
+data file_postfix nii.gz nii.gz
+network1 net_type MSNet MSNet
+network1 net_name MSNet_1 MSNet_1
+network1 downsample_twice True True
+network1 data_shape [19, 180, 160, 4] [19, 180, 160, 4]
+network1 label_shape [11, 180, 160, 1] [11, 180, 160, 1]
+network1 class_num 2 2
+network1 model_file model17/msnet_1_300.pt model17/msnet_1_300.pt
+network1 model_save_prefix model17/msnet_1_300 model17/msnet_1_300
+network2 net_type MSNet MSNet
+network2 net_name MSNet_2 MSNet_2
+network2 downsample_twice True True
+network2 data_shape [19, 160, 180, 4] [19, 160, 180, 4]
+network2 label_shape [11, 160, 180, 1] [11, 160, 180, 1]
+network2 class_num 2 2
+network2 model_file model17/msnet_2_300.pt model17/msnet_2_300.pt
+network2 model_save_prefix model17/msnet_2_300 model17/msnet_2_300
+network3 net_type MSNet MSNet
+network3 net_name MSNet_3 MSNet_3
+network3 downsample_twice True True
+network3 data_shape [19, 160, 160, 4] [19, 160, 160, 4]
+network3 label_shape [11, 160, 160, 1] [11, 160, 160, 1]
+network3 class_num 2 2
+network3 model_file model17/msnet_3_300.pt model17/msnet_3_300.pt
+network3 model_save_prefix model17/msnet_3_300 model17/msnet_3_300
+testing test_slice_direction all all
+testing whole_tumor_only True True
+Has net1
+.
+
+Data load, 100.0% finished
+image_num 2
+temp imgs: (4, 142, 186, 143)
+temp weight: (142, 186, 143)
+temp name: HGG/Brats17_CBICA_ATX_1
+image names: ['gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_flair.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t1.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t1ce.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t2.nii.gz']
+temp bbox: [[0, 35, 47], [141, 220, 189]]
+temp size: (155, 240, 240)
+======================
+======================
+142 186 143
+142 186 143
+143 142 186
+186 142 143
+prob1 size: (142, 186, 143, 2)
+prob size after crf: torch.Size([1, 2, 142, 186, 143])
+pred1 size(142, 186, 143)
+pred1_lc right after morphology.binary_closing: (142, 186, 143)
+pred1_lc right after get_largest_two_component: (142, 186, 143)
+out_label: (142, 186, 143)
+final_label: (155, 240, 240)
+
+
+temp imgs: (4, 143, 176, 157)
+temp weight: (143, 176, 157)
+temp name: HGG/Brats17_CBICA_AXN_1
+image names: ['gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_flair.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t1.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t1ce.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t2.nii.gz']
+temp bbox: [[0, 43, 40], [142, 218, 196]]
+temp size: (155, 240, 240)
+======================
+======================
+143 176 157
+143 176 157
+157 143 176
+176 143 157
+prob1 size: (143, 176, 157, 2)
+prob size after crf: torch.Size([1, 2, 143, 176, 157])
+pred1 size(143, 176, 157)
+pred1_lc right after morphology.binary_closing: (143, 176, 157)
+pred1_lc right after get_largest_two_component: (143, 176, 157)
+out_label: (143, 176, 157)
+final_label: (155, 240, 240)
+
+
+=============== Evaluating ===============
+['HGG/Brats17_CBICA_ATX_1', 'HGG/Brats17_CBICA_AXN_1']
+gdrive/MyDrive/BRATS2017/Brats17TrainingData
+gdrive/MyDrive/BRATS2017/Brats17TrainingData
+tissue type whole
+dice mean   [0.59034495]
+dice std    [0.34225324]
+tissue type core
+dice mean   [0.52648093]
+dice std    [0.23187434]
+tissue type enhenced
+dice mean   [9.87724075e-15]
+dice std    [5.43200604e-15]
+Disabling CRF
+=============== Segmenting ===============
+data data_root gdrive/MyDrive/BRATS2017/Brats17TrainingData gdrive/MyDrive/BRATS2017/Brats17TrainingData
+data save_folder result17 result17
+data data_names CSC490_Braindon/config17/test_names_temp.txt CSC490_Braindon/config17/test_names_temp.txt
+data modality_postfix [flair, t1, t1ce, t2] ['flair', 't1', 't1ce', 't2']
+data file_postfix nii.gz nii.gz
+network1 net_type MSNet MSNet
+network1 net_name MSNet_1 MSNet_1
+network1 downsample_twice True True
+network1 data_shape [19, 180, 160, 4] [19, 180, 160, 4]
+network1 label_shape [11, 180, 160, 1] [11, 180, 160, 1]
+network1 class_num 2 2
+network1 model_file model17/msnet_1_300.pt model17/msnet_1_300.pt
+network1 model_save_prefix model17/msnet_1_300 model17/msnet_1_300
+network2 net_type MSNet MSNet
+network2 net_name MSNet_2 MSNet_2
+network2 downsample_twice True True
+network2 data_shape [19, 160, 180, 4] [19, 160, 180, 4]
+network2 label_shape [11, 160, 180, 1] [11, 160, 180, 1]
+network2 class_num 2 2
+network2 model_file model17/msnet_2_300.pt model17/msnet_2_300.pt
+network2 model_save_prefix model17/msnet_2_300 model17/msnet_2_300
+network3 net_type MSNet MSNet
+network3 net_name MSNet_3 MSNet_3
+network3 downsample_twice True True
+network3 data_shape [19, 160, 160, 4] [19, 160, 160, 4]
+network3 label_shape [11, 160, 160, 1] [11, 160, 160, 1]
+network3 class_num 2 2
+network3 model_file model17/msnet_3_300.pt model17/msnet_3_300.pt
+network3 model_save_prefix model17/msnet_3_300 model17/msnet_3_300
+testing test_slice_direction all all
+testing whole_tumor_only True True
+Has net1
+.
+
+Data load, 100.0% finished
+image_num 2
+temp imgs: (4, 142, 186, 143)
+temp weight: (142, 186, 143)
+temp name: HGG/Brats17_CBICA_ATX_1
+image names: ['gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_flair.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t1.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t1ce.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_ATX_1/Brats17_CBICA_ATX_1_t2.nii.gz']
+temp bbox: [[0, 35, 47], [141, 220, 189]]
+temp size: (155, 240, 240)
+======================
+======================
+142 186 143
+142 186 143
+143 142 186
+186 142 143
+prob1 size: (142, 186, 143, 2)
+pred1 size(142, 186, 143)
+pred1_lc right after morphology.binary_closing: (142, 186, 143)
+pred1_lc right after get_largest_two_component: (142, 186, 143)
+out_label: (142, 186, 143)
+final_label: (155, 240, 240)
+
+
+temp imgs: (4, 143, 176, 157)
+temp weight: (143, 176, 157)
+temp name: HGG/Brats17_CBICA_AXN_1
+image names: ['gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_flair.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t1.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t1ce.nii.gz', 'gdrive/MyDrive/BRATS2017/Brats17TrainingData/HGG/Brats17_CBICA_AXN_1/Brats17_CBICA_AXN_1_t2.nii.gz']
+temp bbox: [[0, 43, 40], [142, 218, 196]]
+temp size: (155, 240, 240)
+======================
+======================
+143 176 157
+143 176 157
+157 143 176
+176 143 157
+prob1 size: (143, 176, 157, 2)
+pred1 size(143, 176, 157)
+pred1_lc right after morphology.binary_closing: (143, 176, 157)
+pred1_lc right after get_largest_two_component: (143, 176, 157)
+out_label: (143, 176, 157)
+final_label: (155, 240, 240)
+
+
+=============== Evaluating ===============
+['HGG/Brats17_CBICA_ATX_1', 'HGG/Brats17_CBICA_AXN_1']
+gdrive/MyDrive/BRATS2017/Brats17TrainingData
+gdrive/MyDrive/BRATS2017/Brats17TrainingData
+tissue type whole
+dice mean   [0.56719053]
+dice std    [0.36971406]
+tissue type core
+dice mean   [0.54341215]
+dice std    [0.23683966]
+tissue type enhenced
+dice mean   [9.87724075e-15]
+dice std    [5.43200604e-15]
+dice std    [5.43200604e-15]

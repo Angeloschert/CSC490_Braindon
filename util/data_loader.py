@@ -102,6 +102,7 @@ class DataLoader():
                 if(mod_idx == 0):
                     margin = 5
                     bbmin, bbmax = get_ND_bounding_box(volume, margin)
+                    # volume size [h, w, 155]
                     volume_size  = volume.shape
                 volume = crop_ND_volume_with_bounding_box(volume, bbmin, bbmax)
                 if(self.data_resize):
@@ -110,12 +111,18 @@ class DataLoader():
                     weight = np.asarray(volume > 0, np.float32)
                 if(self.intensity_normalize[mod_idx]):
                     volume = itensity_normalize_one_volume(volume)
+
+                # One volume is [h, w, 155], volume list [4, h, w, 155]
                 volume_list.append(volume)
                 volume_name_list.append(volume_name)
             ImageNames.append(volume_name_list)
+
+            # X shape [len(data_num), 4, h, w, 155]
             X.append(volume_list)
             W.append(weight)
             bbox.append([bbmin, bbmax])
+
+            # in_size [len(data_num), [4, h, w, 155]]
             in_size.append(volume_size)
             if(self.with_ground_truth):
                 label, _ = self.__load_one_volume(self.patient_names[i], self.label_postfix)

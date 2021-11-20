@@ -1,0 +1,33 @@
+[data]
+data_root             = /home/jufei/projects/def-lakahrs/jufei/2018/training/
+data_names            = config17/train_names_temp4.txt 
+modality_postfix      = [flair, t1, t1ce, t2]
+label_postfix         = seg
+file_postfix          = nii.gz
+with_ground_truth     = True
+batch_size            = 5
+data_shape            = [4, 64, 64, 19]
+label_shape           = [1, 64, 64, 11]
+label_convert_source  = [0, 1, 2, 4]
+label_convert_target  = [0, 0, 0, 1] 
+batch_slice_direction = axial
+train_with_roi_patch  = True
+label_roi_mask        = [1,4]
+roi_patch_margin      = 5
+
+[network]
+net_type            = MSNet
+net_name            = MSNet_EN32
+downsample_twice    = False
+class_num           = 2
+
+[training]
+learning_rate      = 1e-3
+decay              = 1e-7
+maximal_iteration  = 20000
+snapshot_iteration = 2000
+start_iteration    = 0
+test_iteration     = 100
+test_step          = 50
+model_pre_trained  = model17/msnet_en32_16000.pt 
+model_save_prefix  = model17/msnet_en32

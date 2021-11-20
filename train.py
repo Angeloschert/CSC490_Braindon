@@ -62,7 +62,7 @@ def diceProprocess(pred, tempy):
 
 # In[ ]:
 def Dice(inp, target, eps=1):
-	# 抹平了，弄成一维的
+    # 抹平了，弄成一维的
     input_flatten = inp.flatten()
     target_flatten = target.flatten()
     # 计算交集中的数量

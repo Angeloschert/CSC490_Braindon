@@ -1,6 +1,6 @@
 [data]
-data_root             = /home/guotwang/data/Brats17TrainingData
-data_names            = config17/train_names_all_lggx3.txt 
+data_root             = /home/jufei/projects/def-lakahrs/jufei/2018/training/
+data_names            = config17/train_names_temp4.txt
 modality_postfix      = [flair, t1, t1ce, t2]
 label_postfix         = seg
 file_postfix          = nii.gz 
@@ -25,9 +25,9 @@ class_num           = 2
 learning_rate      = 1e-3
 decay              = 1e-7
 maximal_iteration  = 20000
-snapshot_iteration = 5000
+snapshot_iteration = 2000
 start_iteration    = 0
 test_iteration     = 100
-test_step          = 10
+test_step          = 50
 model_pre_trained  = 
 model_save_prefix  = model17/msnet_tc32cr

@@ -27,8 +27,8 @@ The dataset is available on kaggle, https://www.kaggle.com/xxc025/unet-datasets.
 There are few reasons why BraTS 2017 stands out among all other datasets.  First, we want to investigate the topic of brain tumor detection and segmentation by algorithm, which has been a hot medical science topic today. The trend below illustrates the situation and a description is attached below [1].
 
 <p float="left">
-  <img src="./dataset_report_img1.png" width="470" height="475" />
-  <img src="./dataset_report_img2.png" width="470" height="475" />
+  <img src="./pics/dataset_report_img1.png" width="470" height="475" />
+  <img src="./pics/dataset_report_img2.png" width="470" height="475" />
 <p>
 
 

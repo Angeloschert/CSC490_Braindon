@@ -144,7 +144,10 @@ print('=======  ============', count, '=====================')
 lr = config_train.get('learning_rate', 1)
 opt = torch.optim.Adam(net.parameters(), lr=lr)
 # dice_loss = DiceLoss().to(device)
-dice_loss = GDiceLoss() # use v1 diceloss
+sofytdice_kwargs = tversky_kwargs = {'apply_nonlin': None, 'batch_dice': False, 'do_bg': True, 'smooth': 1., 'square': False}
+ce_loss_kwargs = {"weight": None, "size_average": None, "ignore_index": -100, "reduce": None, "reduction": 'mean', "label_smoothing": 0.0}
+dice_loss = FocalTversky_loss(tversky_kwargs)
+# dice_loss = PenaltyGDiceLoss({"smooth": 1e-5})
 # dice_loss = KDiceLoss().to(device)
 ce_loss = nn.CrossEntropyLoss().to(device)
 

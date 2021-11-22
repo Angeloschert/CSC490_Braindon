@@ -24,9 +24,8 @@ def data_augment(data_path, num_transform_choice=2):
     transforms = [
         # spatial
         tio.RandomAnisotropy(),
-        tio.RandomAffine(),
+        tio.RandomBlur(),
         tio.RandomElasticDeformation(num_control_points=10),
-        tio.RandomFlip(axes=['inferior-superior'], flip_probability=1),
     ]
 
     for image_folder in sample_names:

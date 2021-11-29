@@ -143,3 +143,19 @@ The performance for the model in testing set are the following:
       <td></td>
    </tr>
 </table>
+
+Reference
+-----
+### Repository
+[1] brats17: https://github.com/taigw/brats17</br>
+[2] SegLoss: https://github.com/JunMa11/SegLoss</br>
+[3] crfseg: https://github.com/migonch/crfseg#readme</br>
+[4] torchio: https://github.com/fepegar/torchio</br>
+
+### Paper
+[1] Gibson, E., Li, W., Sudre, C., Fidon, L., Shakir, D. I., Wang, G., Eaton-Rosen, Z., Gray, R., Doel, T., Hu, Y., Whyntie, T., Nachev, P., Modat, M., Barratt, D. C., Ourselin, S., Cardoso, M. J., & Vercauteren, T. (2018). NiftyNet: a deep-learning platform for medical imaging. Computer Methods and Programs in Biomedicine, 158, 113–122. https://doi.org/10.1016/j.cmpb.2018.01.025<br/>
+[2] Ma, J., Chen, J., Ng, M., Huang, R., Li, Y., Li, C., Yang, X., & Martel, A. L. (2021). Loss odyssey in medical image segmentation. Medical Image Analysis, 71, 102035. https://doi.org/10.1016/j.media.2021.102035<br/>
+[3] Pérez-García, F., Sparks, R., & Ourselin, S. (2021). TorchIO: A Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning. Computer Methods and Programs in Biomedicine, 208, 106236. https://doi.org/10.1016/j.cmpb.2021.106236<br/>
+[4] Philipp Krähenbühl, & Vladlen Koltun. (2012). Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials.<br/>
+[5] Wang, G., Li, W., Ourselin, S., & Vercauteren, T. (2018). Automatic Brain Tumor Segmentation Using Cascaded Anisotropic Convolutional Neural Networks. Brainlesion: Glioma, Multiple Sclerosis, Stroke and Traumatic Brain Injuries, 178–190. https://doi.org/10.1007/978-3-319-75238-9_16<br/>
+[6] Zheng, S., Jayasumana, S., Romera-Paredes, B., Vineet, V., Su, Z., Du, D., Huang, C., & Torr, P. H. S. (2015). Conditional Random Fields as Recurrent Neural Networks. 2015 IEEE International Conference on Computer Vision (ICCV). Published. https://doi.org/10.1109/iccv.2015.179

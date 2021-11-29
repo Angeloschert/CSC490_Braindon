@@ -14,7 +14,7 @@ The data contains all BraTS 2017, with 10 samples from BraTS 2020 as test set.
 
 **Note 1**: The name of folders in the data shows "BraTS 2018", that's because the official suggested us to use BraTS 2018 when we sending inquires regrading downloading BraTS 2017. They also confirmed that BraTS 2018 is identical with BraTS 2017.
 
-[Image here]
+![Data information](pics/data_information.png)
 
 **Note 2**: The data will be 24 GB after unzip.
 

@@ -4,6 +4,7 @@
 
 Project background was introduced in previous [README.md](background.md).
 
+Further more, our project were based on this [this repo](https://github.com/taigw/brats17/), which won the second place in BraTS 2017. We follow the original model for the config setup and extraction, and we did minor modifications in ``util/``, and major/completely rework on other files.
 
 # Data
 
@@ -61,10 +62,15 @@ In our repo, we provided 18 models in two types:
 
  Models name that ends with ``_da`` are the models trained with **augmented** data, and others are trained with original data.
 
+There are two configs for testing in the ``config17``, which are ``config17/test_all.txt`` and ``config17/test_all_da.txt``, which are for original data and augmented data, respectively. 
+
+
  Also, make sure that directory **result17** exists under project root folder.
 
 Testing Model
 ------
+
+As mentioned above, there are two configs, the following examples will be using original data. Change ``test_all.txt`` to ``test_all_da.txt`` if you want to test with model trained with augmented data. 
 
  After all configs are done, the model can be test **with CRF** with following line:
 
@@ -90,3 +96,50 @@ The evaluation can be simply done with the following line:
 ```
 
 The accuracy will be printed.
+
+
+# 4. Result
+
+The performance for the model in testing set are the following:
+
+<table>
+   <tr>
+      <td></td>
+      <td>Original</td>
+      <td></td>
+      <td></td>
+      <td>Augmented</td>
+      <td></td>
+      <td></td>
+   </tr>
+   <tr>
+      <td></td>
+      <td>ET</td>
+      <td>WT</td>
+      <td>TC</td>
+      <td>ET</td>
+      <td>WT</td>
+      <td>TC</td>
+   </tr>
+   <tr>
+      <td>Mean</td>
+      <td>68.15</td>
+      <td>90.11</td>
+      <td>81.49</td>
+      <td>76.38</td>
+      <td>88.93</td>
+      <td>81.68</td>
+   </tr>
+   <tr>
+      <td>STD</td>
+      <td>30.77</td>
+      <td>6.28</td>
+      <td>16.64</td>
+      <td>25.93</td>
+      <td>8.88</td>
+      <td>13.24</td>
+   </tr>
+   <tr>
+      <td></td>
+   </tr>
+</table>

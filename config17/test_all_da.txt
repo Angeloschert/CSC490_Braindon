@@ -12,8 +12,8 @@ downsample_twice    = True
 data_shape          = [19, 180, 160, 4]
 label_shape         = [11, 180, 160, 1]
 class_num           = 2
-model_file          = model17/wt32ax.pt
-model_save_prefix   = model17/wt32ax
+model_file          = model17/wt32ax_da.pt
+model_save_prefix   = model17/wt32ax_da
 
 [network1sg]
 net_type            = MSNet
@@ -22,8 +22,8 @@ downsample_twice    = True
 data_shape          = [19, 160, 180, 4]
 label_shape         = [11, 160, 180, 1]
 class_num           = 2
-model_file          = model17/wt32sg.pt
-model_save_prefix   = model17/wt32sg
+model_file          = model17/wt32sg_da.pt
+model_save_prefix   = model17/wt32sg_da
 
 [network1cr]
 net_type            = MSNet
@@ -32,8 +32,8 @@ downsample_twice    = True
 data_shape          = [19, 160, 160, 4]
 label_shape         = [11, 160, 160, 1]
 class_num           = 2
-model_file          = model17/wt32cr.pt
-model_save_prefix   = model17/wt32cr
+model_file          = model17/wt32cr_da.pt
+model_save_prefix   = model17/wt32cr_da
 
 [network2ax]
 net_type            = MSNet
@@ -42,8 +42,8 @@ downsample_twice    = True
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/tc32ax.pt
-model_save_prefix   = model17/tc32ax
+model_file          = model17/tc32ax_da.pt
+model_save_prefix   = model17/tc32ax_da
 
 [network2sg]
 net_type            = MSNet
@@ -52,8 +52,8 @@ downsample_twice    = True
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/tc32sg.pt
-model_save_prefix   = model17/tc32sg
+model_file          = model17/tc32sg_da.pt
+model_save_prefix   = model17/tc32sg_da
 
 [network2cr]
 net_type            = MSNet
@@ -62,8 +62,8 @@ downsample_twice    = True
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/tc32cr.pt
-model_save_prefix   = model17/tc32cr
+model_file          = model17/tc32cr_da.pt
+model_save_prefix   = model17/tc32cr_da
 
 [network3ax]
 net_type            = MSNet
@@ -72,8 +72,8 @@ downsample_twice    = False
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/en32ax.pt
-model_save_prefix   = model17/en32ax
+model_file          = model17/en32ax_da.pt
+model_save_prefix   = model17/en32ax_da
 
 [network3sg]
 net_type            = MSNet
@@ -82,8 +82,8 @@ downsample_twice    = False
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/en32sg.pt
-model_save_prefix   = model17/en32sg
+model_file          = model17/en32sg_da.pt
+model_save_prefix   = model17/en32sg_da
 
 [network3cr]
 net_type            = MSNet
@@ -92,8 +92,8 @@ downsample_twice    = False
 data_shape          = [19, 96, 96, 4]
 label_shape         = [11, 96, 96, 1]
 class_num           = 2
-model_file          = model17/en32cr.pt
-model_save_prefix   = model17/en32cr
+model_file          = model17/en32cr_da.pt
+model_save_prefix   = model17/en32cr_da
 
 [testing]
 test_slice_direction = all

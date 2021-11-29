@@ -147,10 +147,10 @@ The performance for the model in testing set are the following:
 Reference
 -----
 ### Repository
-[1] brats17: https://github.com/taigw/brats17</br>
-[2] SegLoss: https://github.com/JunMa11/SegLoss</br>
-[3] crfseg: https://github.com/migonch/crfseg#readme</br>
-[4] torchio: https://github.com/fepegar/torchio</br>
+[1] taigw, brats17 (2019), GitHub repository, https://github.com/taigw/brats17</br>
+[2] Jun Ma, SegLoss (2021), GitHub repository, https://github.com/JunMa11/SegLoss</br>
+[3] Mikhail Goncharov, crfseg (2021), Github repository, https://github.com/migonch/crfseg</br>
+[4] Fernando Pérez-García, torchio (2021), GitHub repository, https://github.com/fepegar/torchio</br>
 
 ### Dataset
 [1] B. H. Menze, A. Jakab, S. Bauer, J. Kalpathy-Cramer, K. Farahani, J. Kirby, et al. "The Multimodal Brain Tumor Image Segmentation Benchmark (BRATS)", IEEE Transactions on Medical Imaging 34(10), 1993-2024 (2015) DOI: 10.1109/TMI.2014.2377694<br/>

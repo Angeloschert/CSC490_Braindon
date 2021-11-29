@@ -146,9 +146,13 @@ The performance for the model in testing set are the following:
 
 **Note**: We used different validation set compare to the original work, as that the validation set for BraTS 2018 does not contain segmentation for us to evaluate the accuracy. Also, the author indicated that they use a much larger batchsize and training iteration than what they release on GitHub. As the result, our implementation accuracy does not exactlly match the accuracy on the paper.
 
+### Sample segmentation
+
+![sample_segmentation](pics/sample_segmentation.png)
 
 Reference
 -----
+
 ### Repository
 [1] taigw, brats17 (2019), GitHub repository, https://github.com/taigw/brats17</br>
 [2] Jun Ma, SegLoss (2021), GitHub repository, https://github.com/JunMa11/SegLoss</br>

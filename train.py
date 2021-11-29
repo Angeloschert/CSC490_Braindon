@@ -60,14 +60,10 @@ def diceProprocess(pred, tempy):
     return pred_, tempy_
 
 
-# In[ ]:
 def Dice(inp, target, eps=1):
-    # 抹平了，弄成一维的
     input_flatten = inp.flatten()
     target_flatten = target.flatten()
-    # 计算交集中的数量
     overlap = np.sum(input_flatten * target_flatten)
-    # 返回值，让值在0和1之间波动
     return np.clip(((2. * overlap) / (np.sum(target_flatten) + np.sum(input_flatten) + eps)), 1e-4, 0.9999)
 
 

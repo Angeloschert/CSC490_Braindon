@@ -69,7 +69,8 @@ if __name__ == '__main__':
     config_file = str(sys.argv[1])
     assert(os.path.isfile(config_file))
 
-    config_data = parse_config(config_file)
+    config = parse_config(config_file)
+    config_data = config.get('data')
     s_folder = config_data['save_folder']
 
     g_folder = config_data['data_root']

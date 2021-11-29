@@ -6,6 +6,7 @@ import sys
 sys.path.append('./')
 import numpy as np
 from util.data_process import load_3d_volume_as_array, binary_dice3d
+from util.parse_config import parse_config
 
 def get_ground_truth_names(g_folder, patient_names_file):
     with open(patient_names_file) as f:
@@ -61,10 +62,18 @@ def dice_of_brats_data_set(gt_names, seg_names, type_idx):
     return dice_all_data
     
 if __name__ == '__main__':
-    s_folder = 'result17'
+    if(len(sys.argv) != 2):
+        print('Number of arguments should be 2. e.g.')
+        print('    python evaluation.py config17/test_all_class.txt')
+        exit()
+    config_file = str(sys.argv[1])
+    assert(os.path.isfile(config_file))
 
-    g_folder = '/content/gdrive/MyDrive/csc490/MICCAI_BraTS2020_TrainingData'
-    patient_names_file = 'config17/test_names_temp.txt'
+    config_data = parse_config(config_file)
+    s_folder = config_data['save_folder']
+
+    g_folder = config_data['data_root']
+    patient_names_file = config_data[data_names]
 
     print("="*15,"Evaluating","="*15)
 

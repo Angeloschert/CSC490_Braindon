@@ -22,7 +22,6 @@ from util.diceloss import *
 # from torchgeometry.losses.dice import *
 import torch
 import torch.nn as nn
-from kornia.losses import DiceLoss as KDiceLoss
 import warnings
 warnings.filterwarnings('ignore')
 

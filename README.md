@@ -105,10 +105,10 @@ The performance for the model in testing set are the following:
 <table>
    <tr>
       <td></td>
-      <td>Original</td>
+      <td>Original Model</td>
       <td></td>
       <td></td>
-      <td>Augmented</td>
+      <td>CRF + Augmented</td>
       <td></td>
       <td></td>
    </tr>
@@ -123,18 +123,18 @@ The performance for the model in testing set are the following:
    </tr>
    <tr>
       <td>Mean</td>
-      <td>68.15</td>
-      <td>90.11</td>
-      <td>81.49</td>
+      <td>63.92</td>
+      <td>91.72</td>
+      <td>80.59</td>
       <td>76.38</td>
       <td>88.93</td>
       <td>81.68</td>
    </tr>
    <tr>
       <td>STD</td>
-      <td>30.77</td>
-      <td>6.28</td>
-      <td>16.64</td>
+      <td>30.63</td>
+      <td>5.82</td>
+      <td>18.15</td>
       <td>25.93</td>
       <td>8.88</td>
       <td>13.24</td>
@@ -143,6 +143,9 @@ The performance for the model in testing set are the following:
       <td></td>
    </tr>
 </table>
+
+**Note**: We used different validation set compare to the original work, as that the validation set for BraTS 2018 does not contain segmentation for us to evaluate the accuracy. Also, the author indicated that they use a much larger batchsize and training iteration than what they release on GitHub. As the result, our implementation accuracy does not exactlly match the accuracy on the paper.
+
 
 Reference
 -----

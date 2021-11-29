@@ -6,3 +6,4 @@ simpleITK
 torchio
 pandas
 matplotlib
+crfseg==1.0.0

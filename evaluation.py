@@ -74,7 +74,7 @@ if __name__ == '__main__':
     s_folder = config_data['save_folder']
 
     g_folder = config_data['data_root']
-    patient_names_file = config_data[data_names]
+    patient_names_file = config_data["data_names"]
 
     print("="*15,"Evaluating","="*15)
 

@@ -1,7 +1,7 @@
 [data]
 data_root         = /home/jufei/projects/def-lakahrs/jufei/490_final/dataset
 save_folder       = result17
-data_names        = /home/jufei/projects/def-lakahrs/jufei/490_final/config17/test_all_names.txt
+data_names        = /home/jufei/projects/def-lakahrs/jufei/490_final/CSC490_Braindon/config17/test_all_names.txt
 modality_postfix  = [flair, t1, t1ce, t2]
 file_postfix      = nii.gz
 

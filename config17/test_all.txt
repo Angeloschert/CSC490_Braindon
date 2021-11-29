@@ -1,0 +1,100 @@
+[data]
+data_root         = /home/jufei/projects/def-lakahrs/jufei/490_final/dataset
+save_folder       = result17
+data_names        = /home/jufei/projects/def-lakahrs/jufei/490_final/test_all_names.txt
+modality_postfix  = [flair, t1, t1ce, t2]
+file_postfix      = nii.gz
+
+[network1ax]
+net_type            = MSNet
+net_name            = MSNet_WT32
+downsample_twice    = True
+data_shape          = [19, 180, 160, 4]
+label_shape         = [11, 180, 160, 1]
+class_num           = 2
+model_file          = wt32ax_da.pt
+model_save_prefix   = wt32ax_da
+
+[network1sg]
+net_type            = MSNet
+net_name            = MSNet_WT32sg
+downsample_twice    = True
+data_shape          = [19, 160, 180, 4]
+label_shape         = [11, 160, 180, 1]
+class_num           = 2
+model_file          = wt32sg_da.pt
+model_save_prefix   = wt32sg_da
+
+[network1cr]
+net_type            = MSNet
+net_name            = MSNet_WT32cr
+downsample_twice    = True
+data_shape          = [19, 160, 160, 4]
+label_shape         = [11, 160, 160, 1]
+class_num           = 2
+model_file          = wt32cr_da.pt
+model_save_prefix   = wt32cr_da
+
+[network2ax]
+net_type            = MSNet
+net_name            = MSNet_TC32
+downsample_twice    = True
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = tc32ax_da.pt
+model_save_prefix   = tc32ax_da
+
+[network2sg]
+net_type            = MSNet
+net_name            = MSNet_TC32sg
+downsample_twice    = True
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = tc32sg_da.pt
+model_save_prefix   = tc32sg_da
+
+[network2cr]
+net_type            = MSNet
+net_name            = MSNet_TC32cr
+downsample_twice    = True
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = tc32cr_da.pt
+model_save_prefix   = tc32cr_da
+
+[network3ax]
+net_type            = MSNet
+net_name            = MSNet_EN32
+downsample_twice    = False
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = en32ax_da.pt
+model_save_prefix   = en32ax_da
+
+[network3sg]
+net_type            = MSNet
+net_name            = MSNet_EN32sg
+downsample_twice    = False
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = en32sg_da.pt
+model_save_prefix   = en32sg_da
+
+[network3cr]
+net_type            = MSNet
+net_name            = MSNet_EN32cr
+downsample_twice    = False
+data_shape          = [19, 96, 96, 4]
+label_shape         = [11, 96, 96, 1]
+class_num           = 2
+model_file          = en32cr_da.pt
+model_save_prefix   = en32cr_da
+
+[testing]
+test_slice_direction = all
+

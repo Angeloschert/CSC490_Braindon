@@ -256,221 +256,223 @@ def test(config_file,USE_CRF = True):
 
     final_labels = []
     for i in range(image_num):
-        print("processing {}/{}".format(i,image_num))
+        try:
+            print("processing {}/{}".format(i,image_num))
 
-        [temp_imgs, temp_weight, temp_name, img_names, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
-        t0 = time.time()
+            [temp_imgs, temp_weight, temp_name, img_names, temp_bbox, temp_size] = dataloader.get_image_data_with_name(i)
+            t0 = time.time()
 
-    # ================================== test of 1st network ==================================
-        data_shape = None
-        if (config_net1):
-            data_shapes = [data_shape1[:-1], data_shape1[:-1], data_shape1[:-1]]
-            data_shape = data_shape1
-            label_shapes = [label_shape1[:-1], label_shape1[:-1], label_shape1[:-1]]
-            nets = [net1, net1, net1]
-            #inputs = [x1, x1, x1]
-            class_num = class_num1
-        else:
-            data_shapes = [data_shape1ax[:-1], data_shape1sg[:-1], data_shape1cr[:-1]]
-            data_shape = data_shape1ax[-1]
-            label_shapes = [label_shape1ax[:-1], label_shape1sg[:-1], label_shape1cr[:-1]]
-            nets = [net1ax, net1sg, net1cr]
-            #inputs = [x1ax, x1sg, x1cr]
-            class_num = class_num1ax
-        for i in range(len(nets)):
-            nets[i] = nets[i].to(device)
-        # print('=' * 20, "Going to prediction")
-        print("temp imgs: " + str(np.array(temp_imgs).shape))
-        print("temp weight: " + str(temp_weight.shape))
-        print("temp name: " + str(temp_name))
-        print("image names: " + str(img_names))
-        print("temp bbox: " + str(temp_bbox))
-        print("temp size: " + str(temp_size))
-        prob1 = test_one_image_three_nets_adaptive_shape(temp_imgs, data_shapes, label_shapes, data_shape1ax[-1],
-                                                         class_num,
-                                                         batch_size, nets, shape_mode=2)
-        print("prob1 size: " + str(prob1.shape))
-
-        # ================== CRF ==================================
-        if USE_CRF:
-          d, h, w, c = prob1.shape
-          prob1 = prob1.reshape(c, d, h, w)
-          prob1 = np.expand_dims(prob1, axis=0)
-          prob1 = crf_model(torch.tensor(prob1, dtype=torch.float32))
-          print("prob1 size after crf: " + str(prob1.shape))
-
-          prob1 = prob1.detach().numpy()[0].reshape(d, h, w, c)
-        # ===========================================================
-        pred1 = np.asarray(np.argmax(prob1, axis=3), np.uint16)
-        pred1 = pred1 * temp_weight
-        print("pred1 size" + str(pred1.shape))
-        # ================================== End of 1st network ==================================
-
-
-
-        wt_threshold = 2000
-        if (config_test.get('whole_tumor_only', False) is True):
-            pred1_lc = ndimage.morphology.binary_closing(pred1, structure=struct)
-            print("pred1_lc right after morphology.binary_closing: " + str(pred1_lc.shape))
-
-            pred1_lc = get_largest_two_component(pred1_lc, False, wt_threshold)
-            print("pred1_lc right after get_largest_two_component: " + str(pred1_lc.shape))
-
-            out_label = pred1_lc
-            print("out_label: " + str(out_label.shape))
-        else:
-            print("Not whole tumor")
-
-
-
-            # ================================== test of 2nd network ==================================
-            if (pred1.sum() == 0):
-                print('net1 output is null', temp_name)
-                bbox1 = get_ND_bounding_box(temp_imgs[0] > 0, margin)
+        # ================================== test of 1st network ==================================
+            data_shape = None
+            if (config_net1):
+                data_shapes = [data_shape1[:-1], data_shape1[:-1], data_shape1[:-1]]
+                data_shape = data_shape1
+                label_shapes = [label_shape1[:-1], label_shape1[:-1], label_shape1[:-1]]
+                nets = [net1, net1, net1]
+                #inputs = [x1, x1, x1]
+                class_num = class_num1
             else:
+                data_shapes = [data_shape1ax[:-1], data_shape1sg[:-1], data_shape1cr[:-1]]
+                data_shape = data_shape1ax[-1]
+                label_shapes = [label_shape1ax[:-1], label_shape1sg[:-1], label_shape1cr[:-1]]
+                nets = [net1ax, net1sg, net1cr]
+                #inputs = [x1ax, x1sg, x1cr]
+                class_num = class_num1ax
+            for i in range(len(nets)):
+                nets[i] = nets[i].to(device)
+            # print('=' * 20, "Going to prediction")
+            print("temp imgs: " + str(np.array(temp_imgs).shape))
+            print("temp weight: " + str(temp_weight.shape))
+            print("temp name: " + str(temp_name))
+            print("image names: " + str(img_names))
+            print("temp bbox: " + str(temp_bbox))
+            print("temp size: " + str(temp_size))
+            prob1 = test_one_image_three_nets_adaptive_shape(temp_imgs, data_shapes, label_shapes, data_shape1ax[-1],
+                                                             class_num,
+                                                             batch_size, nets, shape_mode=2)
+            print("prob1 size: " + str(prob1.shape))
+
+            # ================== CRF ==================================
+            if USE_CRF:
+              d, h, w, c = prob1.shape
+              prob1 = prob1.reshape(c, d, h, w)
+              prob1 = np.expand_dims(prob1, axis=0)
+              prob1 = crf_model(torch.tensor(prob1, dtype=torch.float32))
+              print("prob1 size after crf: " + str(prob1.shape))
+
+              prob1 = prob1.detach().numpy()[0].reshape(d, h, w, c)
+            # ===========================================================
+            pred1 = np.asarray(np.argmax(prob1, axis=3), np.uint16)
+            pred1 = pred1 * temp_weight
+            print("pred1 size" + str(pred1.shape))
+            # ================================== End of 1st network ==================================
+
+
+
+            wt_threshold = 2000
+            if (config_test.get('whole_tumor_only', False) is True):
                 pred1_lc = ndimage.morphology.binary_closing(pred1, structure=struct)
+                print("pred1_lc right after morphology.binary_closing: " + str(pred1_lc.shape))
+
                 pred1_lc = get_largest_two_component(pred1_lc, False, wt_threshold)
-                bbox1 = get_ND_bounding_box(pred1_lc, margin)
-            sub_imgs = [crop_ND_volume_with_bounding_box(one_img, bbox1[0], bbox1[1]) for one_img in temp_imgs]
-            sub_weight = crop_ND_volume_with_bounding_box(temp_weight, bbox1[0], bbox1[1])
-        
-            if (config_net2):
-                data_shapes = [data_shape2[:-1], data_shape2[:-1], data_shape2[:-1]]
-                label_shapes = [label_shape2[:-1], label_shape2[:-1], label_shape2[:-1]]
-                nets = [net2, net2, net2]
-                #inputs = [x2, x2, x2]
-                class_num = class_num2
+                print("pred1_lc right after get_largest_two_component: " + str(pred1_lc.shape))
+
+                out_label = pred1_lc
+                print("out_label: " + str(out_label.shape))
             else:
-                data_shapes = [data_shape2ax[:-1], data_shape2sg[:-1], data_shape2cr[:-1]]
-                label_shapes = [label_shape2ax[:-1], label_shape2sg[:-1], label_shape2cr[:-1]]
-                nets = [net2ax, net2sg, net2cr]
-                #inputs = [x2ax, x2sg, x2cr]
-                class_num = class_num2ax
-            for i in range(len(nets)):
-                nets[i] = nets[i].to(device)
-            prob2 = test_one_image_three_nets_adaptive_shape(sub_imgs, data_shapes, label_shapes, data_shape2ax[-1],
-                                                             class_num, batch_size, nets, shape_mode=1)
-            print("prob2 size: " + str(prob2.shape))
+                print("Not whole tumor")
+
+
+
+                # ================================== test of 2nd network ==================================
+                if (pred1.sum() == 0):
+                    print('net1 output is null', temp_name)
+                    bbox1 = get_ND_bounding_box(temp_imgs[0] > 0, margin)
+                else:
+                    pred1_lc = ndimage.morphology.binary_closing(pred1, structure=struct)
+                    pred1_lc = get_largest_two_component(pred1_lc, False, wt_threshold)
+                    bbox1 = get_ND_bounding_box(pred1_lc, margin)
+                sub_imgs = [crop_ND_volume_with_bounding_box(one_img, bbox1[0], bbox1[1]) for one_img in temp_imgs]
+                sub_weight = crop_ND_volume_with_bounding_box(temp_weight, bbox1[0], bbox1[1])
             
-            # ================== CRF ==================================
-            if USE_CRF:
-              d, h, w, c = prob2.shape
-              prob2 = prob2.reshape(c, d, h, w)
-              prob2 = np.expand_dims(prob2, axis=0)
-              prob2 = crf_model(torch.tensor(prob2, dtype=torch.float32))
-              print("prob2 size after crf: " + str(prob2.shape))
+                if (config_net2):
+                    data_shapes = [data_shape2[:-1], data_shape2[:-1], data_shape2[:-1]]
+                    label_shapes = [label_shape2[:-1], label_shape2[:-1], label_shape2[:-1]]
+                    nets = [net2, net2, net2]
+                    #inputs = [x2, x2, x2]
+                    class_num = class_num2
+                else:
+                    data_shapes = [data_shape2ax[:-1], data_shape2sg[:-1], data_shape2cr[:-1]]
+                    label_shapes = [label_shape2ax[:-1], label_shape2sg[:-1], label_shape2cr[:-1]]
+                    nets = [net2ax, net2sg, net2cr]
+                    #inputs = [x2ax, x2sg, x2cr]
+                    class_num = class_num2ax
+                for i in range(len(nets)):
+                    nets[i] = nets[i].to(device)
+                prob2 = test_one_image_three_nets_adaptive_shape(sub_imgs, data_shapes, label_shapes, data_shape2ax[-1],
+                                                                 class_num, batch_size, nets, shape_mode=1)
+                print("prob2 size: " + str(prob2.shape))
+                
+                # ================== CRF ==================================
+                if USE_CRF:
+                  d, h, w, c = prob2.shape
+                  prob2 = prob2.reshape(c, d, h, w)
+                  prob2 = np.expand_dims(prob2, axis=0)
+                  prob2 = crf_model(torch.tensor(prob2, dtype=torch.float32))
+                  print("prob2 size after crf: " + str(prob2.shape))
 
-              prob2 = prob2.detach().numpy()[0].reshape(d, h, w, c)
-            # ===========================================================
-            pred2 = np.asarray(np.argmax(prob2, axis=3), np.uint16)
-            pred2 = pred2 * sub_weight
-            print("pred2 size" + str(pred2.shape))
-            # ================================== End of 2nd network ==================================
-        
-
-
-
-            # ================================== test of 3rd network ==================================
-            if (pred2.sum() == 0):
-                [roid, roih, roiw] = sub_imgs[0].shape
-                bbox2 = [[0, 0, 0], [roid - 1, roih - 1, roiw - 1]]
-                subsub_imgs = sub_imgs
-                subsub_weight = sub_weight
-            else:
-                pred2_lc = ndimage.morphology.binary_closing(pred2, structure=struct)
-                pred2_lc = get_largest_two_component(pred2_lc)
-                bbox2 = get_ND_bounding_box(pred2_lc, margin)
-                subsub_imgs = [crop_ND_volume_with_bounding_box(one_img, bbox2[0], bbox2[1]) for one_img in sub_imgs]
-                subsub_weight = crop_ND_volume_with_bounding_box(sub_weight, bbox2[0], bbox2[1])
-        
-            if (config_net3):
-                data_shapes = [data_shape3[:-1], data_shape3[:-1], data_shape3[:-1]]
-                label_shapes = [label_shape3[:-1], label_shape3[:-1], label_shape3[:-1]]
-                nets = [net3, net3, net3]
-                #inputs = [x3, x3, x3]
-                class_num = class_num3
-            else:
-                data_shapes = [data_shape3ax[:-1], data_shape3sg[:-1], data_shape3cr[:-1]]
-                label_shapes = [label_shape3ax[:-1], label_shape3sg[:-1], label_shape3cr[:-1]]
-                nets = [net3ax, net3sg, net3cr]
-                #inputs = [x3ax, x3sg, x3cr]
-                class_num = class_num3ax
-            for i in range(len(nets)):
-                nets[i] = nets[i].to(device)
-            prob3 = test_one_image_three_nets_adaptive_shape(subsub_imgs, data_shapes, label_shapes, data_shape3ax[-1],
-                                                             class_num, batch_size, nets,
-                                                             shape_mode=1)
-            print("prob3 size: " + str(prob3.shape))
+                  prob2 = prob2.detach().numpy()[0].reshape(d, h, w, c)
+                # ===========================================================
+                pred2 = np.asarray(np.argmax(prob2, axis=3), np.uint16)
+                pred2 = pred2 * sub_weight
+                print("pred2 size" + str(pred2.shape))
+                # ================================== End of 2nd network ==================================
             
-            # ================== CRF ==================================
-            if USE_CRF:
-              d, h, w, c = prob3.shape
-              prob3 = prob3.reshape(c, d, h, w)
-              prob3 = np.expand_dims(prob3, axis=0)
-              prob3 = crf_model(torch.tensor(prob3, dtype=torch.float32))
-              print("prob3 size after crf: " + str(prob3.shape))
-              prob3 = prob3.detach().numpy()[0].reshape(d, h, w, c)
-            # ===========================================================
-            pred3 = np.asarray(np.argmax(prob3, axis=3), np.uint16)
-            pred3 = pred3 * subsub_weight
-            print("pred3 size" + str(pred3.shape))
-            # ================================== End of 3rd network ==================================
 
 
 
-            # 5.4, fuse results at 3 levels
-            # convert subsub_label to full size (non-enhanced)
-            label3_roi = np.zeros_like(pred2)
-            label3_roi = set_ND_volume_roi_with_bounding_box_range(label3_roi, bbox2[0], bbox2[1], pred3)
-            label3 = np.zeros_like(pred1)
-            label3 = set_ND_volume_roi_with_bounding_box_range(label3, bbox1[0], bbox1[1], label3_roi)
-        
-            label2 = np.zeros_like(pred1)
-            label2 = set_ND_volume_roi_with_bounding_box_range(label2, bbox1[0], bbox1[1], pred2)
-        
-            label1_mask = (pred1 + label2 + label3) > 0
-            label1_mask = ndimage.morphology.binary_closing(label1_mask, structure=struct)
-            label1_mask = get_largest_two_component(label1_mask, False, wt_threshold)
-            label1 = pred1 * label1_mask
-        
-            label2_3_mask = (label2 + label3) > 0
-            label2_3_mask = label2_3_mask * label1_mask
-            label2_3_mask = ndimage.morphology.binary_closing(label2_3_mask, structure=struct)
-            label2_3_mask = remove_external_core(label1, label2_3_mask)
+                # ================================== test of 3rd network ==================================
+                if (pred2.sum() == 0):
+                    [roid, roih, roiw] = sub_imgs[0].shape
+                    bbox2 = [[0, 0, 0], [roid - 1, roih - 1, roiw - 1]]
+                    subsub_imgs = sub_imgs
+                    subsub_weight = sub_weight
+                else:
+                    pred2_lc = ndimage.morphology.binary_closing(pred2, structure=struct)
+                    pred2_lc = get_largest_two_component(pred2_lc)
+                    bbox2 = get_ND_bounding_box(pred2_lc, margin)
+                    subsub_imgs = [crop_ND_volume_with_bounding_box(one_img, bbox2[0], bbox2[1]) for one_img in sub_imgs]
+                    subsub_weight = crop_ND_volume_with_bounding_box(sub_weight, bbox2[0], bbox2[1])
+            
+                if (config_net3):
+                    data_shapes = [data_shape3[:-1], data_shape3[:-1], data_shape3[:-1]]
+                    label_shapes = [label_shape3[:-1], label_shape3[:-1], label_shape3[:-1]]
+                    nets = [net3, net3, net3]
+                    #inputs = [x3, x3, x3]
+                    class_num = class_num3
+                else:
+                    data_shapes = [data_shape3ax[:-1], data_shape3sg[:-1], data_shape3cr[:-1]]
+                    label_shapes = [label_shape3ax[:-1], label_shape3sg[:-1], label_shape3cr[:-1]]
+                    nets = [net3ax, net3sg, net3cr]
+                    #inputs = [x3ax, x3sg, x3cr]
+                    class_num = class_num3ax
+                for i in range(len(nets)):
+                    nets[i] = nets[i].to(device)
+                prob3 = test_one_image_three_nets_adaptive_shape(subsub_imgs, data_shapes, label_shapes, data_shape3ax[-1],
+                                                                 class_num, batch_size, nets,
+                                                                 shape_mode=1)
+                print("prob3 size: " + str(prob3.shape))
+                
+                # ================== CRF ==================================
+                if USE_CRF:
+                  d, h, w, c = prob3.shape
+                  prob3 = prob3.reshape(c, d, h, w)
+                  prob3 = np.expand_dims(prob3, axis=0)
+                  prob3 = crf_model(torch.tensor(prob3, dtype=torch.float32))
+                  print("prob3 size after crf: " + str(prob3.shape))
+                  prob3 = prob3.detach().numpy()[0].reshape(d, h, w, c)
+                # ===========================================================
+                pred3 = np.asarray(np.argmax(prob3, axis=3), np.uint16)
+                pred3 = pred3 * subsub_weight
+                print("pred3 size" + str(pred3.shape))
+                # ================================== End of 3rd network ==================================
 
-            if (label2_3_mask.sum() > 0):
-                label2_3_mask = get_largest_two_component(label2_3_mask)
-
-            label1 = (label1 + label2_3_mask) > 0
-            label2 = label2_3_mask
-            label3 = label2 * label3
-            vox_3 = np.asarray(label3 > 0, np.float32).sum()
-
-            if (0 < vox_3 and vox_3 < 30):
-                label3 = np.zeros_like(label2)
-        
-            # 5.5, convert label and save output
-            out_label = label1 * 2
-            if ('Flair' in config_data['modality_postfix'] and 'mha' in config_data['file_postfix']):
-                out_label[label2 > 0] = 3
-                out_label[label3 == 1] = 1
-                out_label[label3 == 2] = 4
-            elif ('flair' in config_data['modality_postfix'] and 'nii' in config_data['file_postfix']):
-                out_label[label2 > 0] = 1
-                out_label[label3 > 0] = 4
-            out_label = np.asarray(out_label, np.int16)
 
 
-        # print(pred1.sum())
-        test_time.append(time.time() - t0)
-        final_label = np.zeros(temp_size, np.int16)
-        final_label = set_ND_volume_roi_with_bounding_box_range(final_label, temp_bbox[0], temp_bbox[1], out_label)
-        final_labels.append((temp_name, final_label))
-        print("final_label: " + str(final_label.shape))
-        print("\n")
+                # 5.4, fuse results at 3 levels
+                # convert subsub_label to full size (non-enhanced)
+                label3_roi = np.zeros_like(pred2)
+                label3_roi = set_ND_volume_roi_with_bounding_box_range(label3_roi, bbox2[0], bbox2[1], pred3)
+                label3 = np.zeros_like(pred1)
+                label3 = set_ND_volume_roi_with_bounding_box_range(label3, bbox1[0], bbox1[1], label3_roi)
+            
+                label2 = np.zeros_like(pred1)
+                label2 = set_ND_volume_roi_with_bounding_box_range(label2, bbox1[0], bbox1[1], pred2)
+            
+                label1_mask = (pred1 + label2 + label3) > 0
+                label1_mask = ndimage.morphology.binary_closing(label1_mask, structure=struct)
+                label1_mask = get_largest_two_component(label1_mask, False, wt_threshold)
+                label1 = pred1 * label1_mask
+            
+                label2_3_mask = (label2 + label3) > 0
+                label2_3_mask = label2_3_mask * label1_mask
+                label2_3_mask = ndimage.morphology.binary_closing(label2_3_mask, structure=struct)
+                label2_3_mask = remove_external_core(label1, label2_3_mask)
 
-        save_array_as_nifty_volume(final_label, save_folder + "/{0:}.nii.gz".format(temp_name), img_names[0])
-        
+                if (label2_3_mask.sum() > 0):
+                    label2_3_mask = get_largest_two_component(label2_3_mask)
+
+                label1 = (label1 + label2_3_mask) > 0
+                label2 = label2_3_mask
+                label3 = label2 * label3
+                vox_3 = np.asarray(label3 > 0, np.float32).sum()
+
+                if (0 < vox_3 and vox_3 < 30):
+                    label3 = np.zeros_like(label2)
+            
+                # 5.5, convert label and save output
+                out_label = label1 * 2
+                if ('Flair' in config_data['modality_postfix'] and 'mha' in config_data['file_postfix']):
+                    out_label[label2 > 0] = 3
+                    out_label[label3 == 1] = 1
+                    out_label[label3 == 2] = 4
+                elif ('flair' in config_data['modality_postfix'] and 'nii' in config_data['file_postfix']):
+                    out_label[label2 > 0] = 1
+                    out_label[label3 > 0] = 4
+                out_label = np.asarray(out_label, np.int16)
+
+
+            # print(pred1.sum())
+            test_time.append(time.time() - t0)
+            final_label = np.zeros(temp_size, np.int16)
+            final_label = set_ND_volume_roi_with_bounding_box_range(final_label, temp_bbox[0], temp_bbox[1], out_label)
+            final_labels.append((temp_name, final_label))
+            print("final_label: " + str(final_label.shape))
+            print("\n")
+
+            save_array_as_nifty_volume(final_label, save_folder + "/{0:}.nii.gz".format(temp_name), img_names[0])
+        except Exception as e:
+            print(e)        
 if __name__ == '__main__':
     if (len(sys.argv) ==2):
         print("about to segment images without CRF")

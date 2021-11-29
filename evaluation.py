@@ -40,25 +40,28 @@ def dice_of_brats_data_set(gt_names, seg_names, type_idx):
     assert(len(gt_names) == len(seg_names))
     dice_all_data = []
     for i in range(len(gt_names)):
-        g_volume = load_3d_volume_as_array(gt_names[i])
-        s_volume = load_3d_volume_as_array(seg_names[i])
+        try:
+            g_volume = load_3d_volume_as_array(gt_names[i])
+            s_volume = load_3d_volume_as_array(seg_names[i])
 
-        dice_one_volume = []
-        if(type_idx ==0): # whole tumor
-            temp_dice = binary_dice3d(s_volume > 0, g_volume > 0)
-            dice_one_volume = [temp_dice]
-        elif(type_idx == 1): # tumor core
-            seg_=np.copy(s_volume)
-            ground_=np.copy(g_volume)
-            seg_[seg_==2]=0
-            ground_[ground_==2]=0
-            temp_dice = binary_dice3d(seg_ > 0, ground_ > 0)
-            dice_one_volume = [temp_dice]
-        else: #enhenced tumor
-            temp_dice = binary_dice3d(s_volume ==4, g_volume ==4)
-            dice_one_volume = [temp_dice]
-            
-        dice_all_data.append(dice_one_volume)
+            dice_one_volume = []
+            if(type_idx ==0): # whole tumor
+                temp_dice = binary_dice3d(s_volume > 0, g_volume > 0)
+                dice_one_volume = [temp_dice]
+            elif(type_idx == 1): # tumor core
+                seg_=np.copy(s_volume)
+                ground_=np.copy(g_volume)
+                seg_[seg_==2]=0
+                ground_[ground_==2]=0
+                temp_dice = binary_dice3d(seg_ > 0, ground_ > 0)
+                dice_one_volume = [temp_dice]
+            else: #enhenced tumor
+                temp_dice = binary_dice3d(s_volume ==4, g_volume ==4)
+                dice_one_volume = [temp_dice]
+                
+            dice_all_data.append(dice_one_volume)
+        except Exception as e:
+            print(e)
     return dice_all_data
     
 if __name__ == '__main__':
